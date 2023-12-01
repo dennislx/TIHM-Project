@@ -1,0 +1,609 @@
+patient_id,date,type
+c55f8,2019-04-04 09:10:21,Blood pressure
+16f4b,2019-04-08 13:40:20,Blood pressure
+16f4b,2019-04-11 12:00:22,Agitation
+ec812,2019-04-12 09:10:29,Blood pressure
+16f4b,2019-04-14 12:00:07,Agitation
+16f4b,2019-04-15 18:00:24,Agitation
+16f4b,2019-04-16 18:00:38,Agitation
+c55f8,2019-04-17 08:00:42,Blood pressure
+c55f8,2019-04-17 18:40:49,Blood pressure
+6b29b,2019-04-21 08:10:44,Blood pressure
+6b29b,2019-04-21 09:10:44,Blood pressure
+16f4b,2019-04-21 12:00:55,Agitation
+16f4b,2019-04-22 12:00:10,Agitation
+0cda9,2019-04-24 08:00:33,Body water
+6b29b,2019-04-25 08:00:49,Blood pressure
+0cda9,2019-04-25 08:10:49,Body water
+0cda9,2019-04-25 15:40:54,Body water
+6b29b,2019-04-26 08:00:07,Blood pressure
+0cda9,2019-04-26 08:00:08,Body water
+393cb,2019-04-26 08:40:07,Blood pressure
+0cda9,2019-04-26 11:20:09,Body water
+16f4b,2019-04-26 12:00:19,Agitation
+0cda9,2019-04-27 08:00:25,Body water
+6b29b,2019-04-27 08:00:25,Blood pressure
+c5785,2019-04-27 08:00:25,Blood pressure
+201d8,2019-04-27 08:00:25,Blood pressure
+201d8,2019-04-27 11:20:26,Blood pressure
+d263a,2019-04-27 12:10:27,Blood pressure
+6b29b,2019-04-28 08:00:42,Blood pressure
+0cda9,2019-04-28 08:00:42,Body water
+30a32,2019-04-28 09:20:42,Blood pressure
+393cb,2019-04-28 11:10:44,Blood pressure
+d263a,2019-04-28 12:20:45,Blood pressure
+0cda9,2019-04-29 08:11:00,Body water
+16f4b,2019-04-29 10:10:01,Blood pressure
+b9d58,2019-04-29 12:00:10,Agitation
+0cda9,2019-04-30 08:10:18,Body water
+1fbe4,2019-04-30 08:40:18,Blood pressure
+1fbe4,2019-04-30 08:40:18,Pulse
+1fbe4,2019-04-30 09:10:18,Pulse
+8d0d4,2019-04-30 17:50:25,Pulse
+b9d58,2019-04-30 18:00:30,Agitation
+0cda9,2019-05-01 08:00:37,Body water
+c5785,2019-05-01 09:50:37,Blood pressure
+e4959,2019-05-01 17:20:44,Blood pressure
+6b29b,2019-05-02 08:00:55,Blood pressure
+0cda9,2019-05-02 08:00:55,Body water
+393cb,2019-05-02 10:50:56,Blood pressure
+a380e,2019-05-03 08:00:15,Blood pressure
+0cda9,2019-05-03 08:10:13,Body water
+7db78,2019-05-03 08:10:13,Blood pressure
+8a835,2019-05-03 09:10:15,Blood pressure
+1fbe4,2019-05-03 09:20:14,Blood pressure
+8a835,2019-05-03 09:40:15,Pulse
+1fbe4,2019-05-03 09:40:15,Blood pressure
+30a32,2019-05-03 11:40:16,Blood pressure
+30a32,2019-05-03 13:20:18,Blood pressure
+714d7,2019-05-04 08:00:33,Blood pressure
+0cda9,2019-05-04 08:00:33,Body water
+8a835,2019-05-04 08:00:33,Blood pressure
+c55f8,2019-05-04 08:10:32,Blood pressure
+6b29b,2019-05-04 08:10:32,Blood pressure
+c5785,2019-05-04 08:20:32,Blood pressure
+201d8,2019-05-04 08:40:33,Blood pressure
+393cb,2019-05-04 08:50:33,Blood pressure
+393cb,2019-05-04 09:10:33,Blood pressure
+0cda9,2019-05-05 08:00:52,Body water
+c55f8,2019-05-05 08:00:53,Blood pressure
+55cd4,2019-05-05 08:00:53,Blood pressure
+1fbe4,2019-05-05 08:20:51,Pulse
+a380e,2019-05-05 08:40:51,Blood pressure
+1fbe4,2019-05-05 09:10:52,Blood pressure
+1fbe4,2019-05-05 09:10:52,Pulse
+393cb,2019-05-05 09:40:52,Blood pressure
+8a835,2019-05-05 09:50:52,Blood pressure
+c55f8,2019-05-05 12:20:54,Pulse
+c55f8,2019-05-05 16:40:58,Blood pressure
+c55f8,2019-05-05 16:40:58,Pulse
+c55f8,2019-05-05 16:50:58,Blood pressure
+c55f8,2019-05-05 16:50:58,Pulse
+0cda9,2019-05-06 08:00:11,Body water
+c5785,2019-05-06 08:00:12,Blood pressure
+8a835,2019-05-06 08:50:11,Blood pressure
+30a32,2019-05-06 09:20:11,Blood pressure
+393cb,2019-05-06 11:50:13,Blood pressure
+393cb,2019-05-06 11:50:13,Pulse
+7db78,2019-05-06 12:00:37,Agitation
+ec812,2019-05-06 12:00:43,Agitation
+0cda9,2019-05-07 08:00:29,Body water
+c5785,2019-05-07 08:00:30,Blood pressure
+6b29b,2019-05-07 08:00:30,Blood pressure
+30a32,2019-05-07 08:50:29,Blood pressure
+0cda9,2019-05-08 08:00:48,Body water
+c55f8,2019-05-08 08:00:48,Weight
+30a32,2019-05-08 09:10:47,Blood pressure
+e4959,2019-05-08 16:10:53,Blood pressure
+8d0d4,2019-05-08 18:40:55,Blood pressure
+8d0d4,2019-05-08 18:50:55,Blood pressure
+0cda9,2019-05-09 08:00:06,Body water
+30a32,2019-05-09 08:50:06,Blood pressure
+393cb,2019-05-09 13:50:09,Blood pressure
+0cda9,2019-05-10 08:00:25,Body water
+6b29b,2019-05-10 09:10:24,Blood pressure
+393cb,2019-05-10 10:50:25,Blood pressure
+16f4b,2019-05-10 12:00:40,Agitation
+0cda9,2019-05-11 08:00:44,Body water
+a380e,2019-05-11 08:00:44,Blood pressure
+393cb,2019-05-11 11:10:45,Blood pressure
+ec812,2019-05-11 12:01:19,Agitation
+b9d58,2019-05-11 18:00:57,Agitation
+16f4b,2019-05-11 18:01:01,Agitation
+0cda9,2019-05-12 08:00:03,Body water
+a380e,2019-05-12 08:20:02,Blood pressure
+393cb,2019-05-12 11:10:05,Blood pressure
+65db4,2019-05-12 14:40:08,Blood pressure
+0cda9,2019-05-13 08:00:24,Body water
+d93d8,2019-05-13 08:20:22,Blood pressure
+30a32,2019-05-13 09:40:23,Blood pressure
+393cb,2019-05-13 11:40:25,Blood pressure
+393cb,2019-05-13 11:50:25,Blood pressure
+c55f8,2019-05-13 15:20:28,Blood pressure
+c55f8,2019-05-13 15:40:28,Blood pressure
+c55f8,2019-05-13 16:10:29,Blood pressure
+0cda9,2019-05-14 08:00:43,Body water
+d93d8,2019-05-14 08:00:43,Blood pressure
+393cb,2019-05-14 11:40:44,Blood pressure
+16f4b,2019-05-14 12:01:01,Agitation
+0cda9,2019-05-14 12:10:44,Body water
+0cda9,2019-05-14 12:40:45,Body water
+93c14,2019-05-15 10:20:02,Blood pressure
+0d5ef,2019-05-15 11:40:03,Blood pressure
+73f7c,2019-05-15 12:00:41,Agitation
+3fb61,2019-05-15 12:40:04,Blood pressure
+3fb61,2019-05-15 13:20:05,Blood pressure
+73f7c,2019-05-15 19:40:10,Blood pressure
+0cda9,2019-05-16 08:00:21,Body water
+1fbe4,2019-05-16 08:00:21,Pulse
+73f7c,2019-05-16 08:00:54,Agitation
+1fbe4,2019-05-16 08:20:19,Pulse
+c5785,2019-05-16 08:40:19,Blood pressure
+393cb,2019-05-16 09:50:20,Blood pressure
+201d8,2019-05-16 09:50:20,Blood pressure
+28710,2019-05-16 10:40:21,Pulse
+28710,2019-05-16 11:10:21,Blood pressure
+28710,2019-05-16 11:10:21,Pulse
+e4959,2019-05-16 12:01:15,Agitation
+0cda9,2019-05-17 08:00:40,Body water
+28710,2019-05-17 08:20:38,Pulse
+e8a78,2019-05-17 12:01:37,Agitation
+393cb,2019-05-17 13:40:43,Blood pressure
+393cb,2019-05-17 13:50:43,Blood pressure
+d263a,2019-05-17 18:01:04,Agitation
+b45c2,2019-05-17 18:50:47,Blood pressure
+201d8,2019-05-18 08:20:58,Blood pressure
+ec812,2019-05-18 09:40:59,Blood pressure
+6b29b,2019-05-18 10:41:00,Blood pressure
+ab47a,2019-05-18 10:51:00,Blood pressure
+7db78,2019-05-18 12:00:28,Agitation
+73f7c,2019-05-18 13:20:02,Blood pressure
+2f54b,2019-05-18 13:50:03,Blood pressure
+28710,2019-05-18 15:20:04,Blood pressure
+93c14,2019-05-18 15:50:04,Blood pressure
+28710,2019-05-18 16:20:05,Blood pressure
+7db78,2019-05-18 18:00:27,Agitation
+16f4b,2019-05-19 08:00:29,Agitation
+73f7c,2019-05-19 08:00:53,Agitation
+1fbe4,2019-05-19 09:10:19,Pulse
+30a32,2019-05-19 10:10:19,Blood pressure
+a2849,2019-05-19 12:01:16,Agitation
+65db4,2019-05-19 12:40:22,Blood pressure
+393cb,2019-05-19 14:50:23,Blood pressure
+28710,2019-05-19 15:20:24,Blood pressure
+28710,2019-05-19 15:20:24,Pulse
+28710,2019-05-19 16:50:25,Blood pressure
+28710,2019-05-19 16:50:25,Pulse
+099bc,2019-05-20 08:00:40,Blood pressure
+c55f8,2019-05-20 08:50:38,Blood pressure
+0cda9,2019-05-20 10:10:39,Body water
+30a32,2019-05-20 10:10:39,Blood pressure
+3fb61,2019-05-20 10:40:39,Blood pressure
+7db78,2019-05-20 12:01:11,Agitation
+93c14,2019-05-20 12:01:46,Agitation
+28710,2019-05-20 13:20:42,Pulse
+2f54b,2019-05-20 14:20:43,Blood pressure
+393cb,2019-05-20 15:50:44,Blood pressure
+73f7c,2019-05-20 18:01:22,Agitation
+93c14,2019-05-20 18:01:32,Agitation
+56b6b,2019-05-21 08:00:59,Body water
+0cda9,2019-05-21 08:01:00,Body water
+c5785,2019-05-21 08:01:00,Blood pressure
+6b29b,2019-05-21 08:10:57,Blood pressure
+0d5ef,2019-05-21 08:50:57,Blood pressure
+30a32,2019-05-21 08:50:57,Blood pressure
+ab47a,2019-05-21 09:10:57,Body water
+ab47a,2019-05-21 09:10:57,Blood pressure
+d93d8,2019-05-21 14:10:02,Blood pressure
+d93d8,2019-05-21 14:20:02,Blood pressure
+393cb,2019-05-21 15:40:03,Blood pressure
+393cb,2019-05-21 15:50:03,Pulse
+73f7c,2019-05-21 18:00:42,Agitation
+d93d8,2019-05-22 08:00:17,Blood pressure
+0cda9,2019-05-22 08:00:18,Body water
+d93d8,2019-05-22 12:00:54,Agitation
+73f7c,2019-05-22 12:01:12,Agitation
+ca44d,2019-05-22 14:50:21,Pulse
+ca44d,2019-05-22 15:20:22,Pulse
+393cb,2019-05-22 17:10:23,Blood pressure
+73f7c,2019-05-22 18:01:01,Agitation
+0cda9,2019-05-23 08:00:38,Body water
+55cd4,2019-05-23 08:00:38,Blood pressure
+0efe8,2019-05-23 08:00:38,Pulse
+a380e,2019-05-23 08:00:38,Blood pressure
+d93d8,2019-05-23 08:00:38,Blood pressure
+73f7c,2019-05-23 08:01:21,Agitation
+6b29b,2019-05-23 08:20:35,Blood pressure
+30a32,2019-05-23 08:50:35,Blood pressure
+0d5ef,2019-05-23 10:50:37,Blood pressure
+d93d8,2019-05-23 11:40:38,Blood pressure
+d93d8,2019-05-23 12:01:12,Agitation
+eca1f,2019-05-23 12:01:23,Agitation
+73f7c,2019-05-23 12:01:30,Agitation
+e8a78,2019-05-23 12:01:42,Agitation
+0d5ef,2019-05-23 12:01:46,Agitation
+ca44d,2019-05-23 14:50:40,Pulse
+28710,2019-05-23 15:20:41,Pulse
+393cb,2019-05-23 17:10:42,Blood pressure
+73f7c,2019-05-23 18:01:22,Agitation
+0cda9,2019-05-24 08:00:56,Body water
+ca44d,2019-05-24 08:00:56,Pulse
+6b29b,2019-05-24 08:00:57,Blood pressure
+73f7c,2019-05-24 08:01:39,Agitation
+46286,2019-05-24 08:10:55,Blood pressure
+c55f8,2019-05-24 08:50:55,Blood pressure
+eca1f,2019-05-24 10:10:56,Pulse
+7db78,2019-05-24 12:01:29,Agitation
+393cb,2019-05-24 12:01:57,Agitation
+0d5ef,2019-05-24 12:02:08,Agitation
+b45c2,2019-05-24 14:41:00,Blood pressure
+ca44d,2019-05-24 15:40:01,Pulse
+73f7c,2019-05-24 18:00:45,Agitation
+0cda9,2019-05-25 08:00:16,Body water
+28710,2019-05-25 08:00:16,Pulse
+46286,2019-05-25 08:20:15,Blood pressure
+46286,2019-05-25 08:50:15,Blood pressure
+28710,2019-05-25 09:20:16,Pulse
+d93d8,2019-05-25 10:50:17,Blood pressure
+393cb,2019-05-25 11:20:18,Blood pressure
+93c14,2019-05-25 12:01:27,Agitation
+0d5ef,2019-05-25 12:01:29,Agitation
+d93d8,2019-05-25 12:50:19,Blood pressure
+ca44d,2019-05-25 15:50:22,Pulse
+73f7c,2019-05-25 18:01:07,Agitation
+0d5ef,2019-05-25 18:01:19,Agitation
+b45c2,2019-05-25 18:50:24,Blood pressure
+73f7c,2019-05-26 08:01:17,Agitation
+46286,2019-05-26 08:20:35,Blood pressure
+0cda9,2019-05-26 08:20:35,Body water
+6b29b,2019-05-26 08:40:36,Blood pressure
+30a32,2019-05-26 09:50:37,Blood pressure
+d93d8,2019-05-26 10:50:38,Blood pressure
+0d5ef,2019-05-26 11:40:38,Blood pressure
+8a835,2019-05-26 12:01:01,Agitation
+7db78,2019-05-26 12:01:11,Agitation
+73f7c,2019-05-26 12:01:33,Agitation
+d93d8,2019-05-26 14:40:41,Blood pressure
+ca44d,2019-05-26 15:20:42,Pulse
+8a835,2019-05-26 18:01:02,Agitation
+d93d8,2019-05-26 18:01:14,Agitation
+73f7c,2019-05-26 18:01:29,Agitation
+0cda9,2019-05-27 08:00:57,Body water
+46286,2019-05-27 08:40:56,Blood pressure
+a2849,2019-05-27 08:40:56,Blood pressure
+d93d8,2019-05-27 09:50:57,Blood pressure
+393cb,2019-05-27 11:40:58,Blood pressure
+73f7c,2019-05-27 12:01:59,Agitation
+a2849,2019-05-27 12:02:10,Agitation
+e4959,2019-05-27 12:02:14,Agitation
+0d5ef,2019-05-27 12:51:00,Blood pressure
+ca44d,2019-05-27 15:20:02,Pulse
+3fb61,2019-05-27 17:10:03,Blood pressure
+3fb61,2019-05-27 17:10:03,Pulse
+73f7c,2019-05-27 18:00:48,Agitation
+46286,2019-05-28 08:00:19,Blood pressure
+0cda9,2019-05-28 08:00:19,Body water
+6b29b,2019-05-28 08:00:19,Blood pressure
+d93d8,2019-05-28 08:50:16,Blood pressure
+d93d8,2019-05-28 10:20:17,Blood pressure
+393cb,2019-05-28 10:50:18,Blood pressure
+393cb,2019-05-28 11:10:18,Blood pressure
+d93d8,2019-05-28 12:01:01,Agitation
+0cda9,2019-05-28 12:01:04,Agitation
+73f7c,2019-05-28 12:01:23,Agitation
+a2849,2019-05-28 12:01:35,Agitation
+e8a78,2019-05-28 12:01:41,Agitation
+d93d8,2019-05-28 12:02:29,Blood pressure
+0d5ef,2019-05-28 13:20:20,Blood pressure
+b45c2,2019-05-28 15:40:22,Blood pressure
+ca44d,2019-05-28 16:40:23,Pulse
+73f7c,2019-05-28 18:01:09,Agitation
+0cda9,2019-05-29 08:00:38,Body water
+46286,2019-05-29 08:10:36,Blood pressure
+d93d8,2019-05-29 08:10:36,Blood pressure
+6b29b,2019-05-29 08:10:36,Blood pressure
+30a32,2019-05-29 10:20:37,Blood pressure
+73f7c,2019-05-29 12:01:37,Agitation
+0d5ef,2019-05-29 12:01:57,Agitation
+56b6b,2019-05-29 13:10:40,Body water
+2f54b,2019-05-29 14:10:41,Blood pressure
+d93d8,2019-05-29 14:50:41,Blood pressure
+ca44d,2019-05-29 15:40:42,Pulse
+28710,2019-05-29 19:20:45,Blood pressure
+d93d8,2019-05-30 08:00:58,Blood pressure
+0cda9,2019-05-30 08:00:58,Body water
+30a32,2019-05-30 08:20:56,Blood pressure
+65db4,2019-05-30 10:20:58,Blood pressure
+a2849,2019-05-30 12:02:09,Agitation
+93c14,2019-05-30 12:02:16,Agitation
+ca44d,2019-05-30 16:10:02,Pulse
+393cb,2019-05-30 17:50:04,Blood pressure
+d93d8,2019-05-30 18:00:34,Agitation
+0cda9,2019-05-31 08:00:18,Body water
+46286,2019-05-31 08:20:16,Blood pressure
+e2472,2019-05-31 10:10:17,Blood pressure
+e2472,2019-05-31 10:10:17,Pulse
+e2472,2019-05-31 10:50:18,Pulse
+7db78,2019-05-31 12:00:53,Agitation
+201d8,2019-05-31 12:00:54,Agitation
+ca44d,2019-05-31 15:40:22,Pulse
+73f7c,2019-05-31 18:01:09,Agitation
+d93d8,2019-06-01 08:00:38,Blood pressure
+099bc,2019-06-01 08:00:38,Blood pressure
+56b6b,2019-06-01 08:00:38,Blood pressure
+73f7c,2019-06-01 08:01:28,Agitation
+46286,2019-06-01 08:20:36,Blood pressure
+0cda9,2019-06-01 09:20:37,Body water
+65db4,2019-06-01 10:10:37,Blood pressure
+d93d8,2019-06-01 10:20:37,Blood pressure
+c5031,2019-06-01 12:01:37,Agitation
+73f7c,2019-06-01 12:01:39,Agitation
+0d5ef,2019-06-01 12:01:58,Agitation
+7db78,2019-06-01 13:40:40,Body water
+ca44d,2019-06-01 15:40:42,Pulse
+6b29b,2019-06-02 08:01:13,Agitation
+0cda9,2019-06-02 08:20:55,Body water
+201d8,2019-06-02 08:20:55,Blood pressure
+0d5ef,2019-06-02 08:50:55,Blood pressure
+0d5ef,2019-06-02 08:50:55,Pulse
+0d5ef,2019-06-02 12:02:19,Agitation
+ca44d,2019-06-02 15:20:01,Pulse
+099bc,2019-06-03 08:00:17,Blood pressure
+0cda9,2019-06-03 08:00:17,Body water
+46286,2019-06-03 08:00:17,Blood pressure
+6b29b,2019-06-03 08:50:15,Blood pressure
+30a32,2019-06-03 09:10:15,Blood pressure
+e87bd,2019-06-03 12:01:19,Agitation
+c5031,2019-06-03 12:01:32,Agitation
+73f7c,2019-06-03 12:01:34,Agitation
+0d5ef,2019-06-03 12:01:57,Agitation
+ca44d,2019-06-03 15:20:20,Pulse
+b45c2,2019-06-03 15:20:20,Blood pressure
+393cb,2019-06-03 15:50:21,Blood pressure
+3fb61,2019-06-03 18:01:12,Agitation
+c5031,2019-06-03 18:01:13,Agitation
+28710,2019-06-03 18:10:23,Pulse
+d93d8,2019-06-04 08:00:34,Blood pressure
+46286,2019-06-04 08:00:35,Blood pressure
+1fbe4,2019-06-04 08:00:35,Pulse
+0cda9,2019-06-04 08:40:34,Body water
+0cda9,2019-06-04 08:50:36,Body water
+561af,2019-06-04 08:50:36,Body water
+d93d8,2019-06-04 08:50:36,Blood pressure
+28710,2019-06-04 08:50:36,Pulse
+1fbe4,2019-06-04 08:50:36,Pulse
+561af,2019-06-04 08:50:36,Blood pressure
+ca44d,2019-06-04 08:50:36,Pulse
+46286,2019-06-04 08:50:36,Blood pressure
+eca1f,2019-06-04 09:10:34,Pulse
+30a32,2019-06-04 10:20:35,Blood pressure
+73f7c,2019-06-04 12:01:51,Agitation
+30a32,2019-06-04 12:02:27,Blood pressure
+d93d8,2019-06-04 12:03:02,Blood pressure
+ca44d,2019-06-04 15:20:39,Pulse
+393cb,2019-06-04 17:10:41,Blood pressure
+73f7c,2019-06-04 18:01:39,Agitation
+a2849,2019-06-04 18:01:49,Agitation
+93c14,2019-06-04 18:01:54,Agitation
+0cda9,2019-06-05 08:00:55,Body water
+d93d8,2019-06-05 08:00:56,Weight
+099bc,2019-06-05 08:10:53,Blood pressure
+099bc,2019-06-05 08:20:53,Blood pressure
+e2472,2019-06-05 09:40:55,Blood pressure
+e87bd,2019-06-05 09:50:54,Blood pressure
+6b29b,2019-06-05 10:40:55,Blood pressure
+c5031,2019-06-05 12:02:04,Agitation
+93c14,2019-06-05 12:02:23,Agitation
+ca44d,2019-06-05 16:11:00,Pulse
+393cb,2019-06-05 17:11:01,Blood pressure
+c5785,2019-06-06 08:00:15,Blood pressure
+0cda9,2019-06-06 08:00:15,Body water
+46286,2019-06-06 08:00:15,Blood pressure
+3fb61,2019-06-06 09:20:13,Blood pressure
+ca44d,2019-06-06 15:20:19,Pulse
+393cb,2019-06-06 16:10:19,Blood pressure
+393cb,2019-06-06 17:40:20,Blood pressure
+0cda9,2019-06-07 08:00:32,Body water
+099bc,2019-06-07 08:00:33,Blood pressure
+73f7c,2019-06-07 08:01:28,Agitation
+d93d8,2019-06-07 08:20:32,Blood pressure
+46286,2019-06-07 08:50:32,Blood pressure
+6b29b,2019-06-07 08:50:32,Blood pressure
+099bc,2019-06-07 09:50:33,Blood pressure
+099bc,2019-06-07 10:10:33,Blood pressure
+6b29b,2019-06-07 10:40:34,Blood pressure
+c5031,2019-06-07 12:01:45,Agitation
+e4959,2019-06-07 12:02:02,Agitation
+46286,2019-06-07 14:20:37,Blood pressure
+46286,2019-06-07 14:40:38,Blood pressure
+099bc,2019-06-07 14:50:38,Blood pressure
+ca44d,2019-06-07 16:10:38,Pulse
+ca44d,2019-06-07 16:20:39,Pulse
+ec812,2019-06-07 18:01:26,Agitation
+c5031,2019-06-07 18:01:40,Agitation
+73f7c,2019-06-07 18:01:41,Agitation
+8d0d4,2019-06-07 18:01:48,Agitation
+0cda9,2019-06-08 08:00:53,Body water
+46286,2019-06-08 08:10:51,Blood pressure
+d93d8,2019-06-08 08:50:51,Blood pressure
+ca44d,2019-06-08 09:10:51,Blood pressure
+561af,2019-06-08 09:40:52,Body water
+ca44d,2019-06-08 09:50:52,Blood pressure
+d93d8,2019-06-08 10:50:53,Blood pressure
+ec812,2019-06-10 09:50:00,Agitation
+d93d8,2019-06-08 12:50:55,Blood pressure
+30a32,2019-06-08 14:10:56,Blood pressure
+393cb,2019-06-08 14:20:56,Blood pressure
+ca44d,2019-06-08 15:50:57,Pulse
+0cda9,2019-06-09 08:00:12,Body water
+28710,2019-06-09 08:00:12,Blood pressure
+6b29b,2019-06-09 08:00:12,Blood pressure
+28710,2019-06-09 08:40:11,Blood pressure
+28710,2019-06-09 09:50:12,Blood pressure
+c5031,2019-06-09 12:01:25,Agitation
+a2849,2019-06-09 12:01:39,Agitation
+3fb61,2019-06-09 13:20:15,Blood pressure
+ca44d,2019-06-09 15:40:17,Pulse
+3fb61,2019-06-09 18:01:17,Agitation
+0d5ef,2019-06-09 18:01:39,Agitation
+714d7,2019-06-10 08:00:33,Pulse
+0efe8,2019-06-10 08:00:33,Body water
+0cda9,2019-06-10 08:00:33,Body water
+6b29b,2019-06-10 08:00:33,Blood pressure
+6b29b,2019-06-10 08:10:31,Blood pressure
+d93d8,2019-06-10 08:40:31,Blood pressure
+46286,2019-06-10 08:50:32,Blood pressure
+46286,2019-06-10 10:10:33,Blood pressure
+46286,2019-06-10 10:20:33,Blood pressure
+099bc,2019-06-10 12:01:04,Agitation
+e4959,2019-06-10 12:01:56,Agitation
+93c14,2019-06-10 12:01:58,Agitation
+28710,2019-06-10 12:10:35,Blood pressure
+385de,2019-06-10 13:40:36,Blood pressure
+393cb,2019-06-10 13:50:36,Blood pressure
+099bc,2019-06-10 14:10:36,Blood pressure
+ca44d,2019-06-10 15:40:38,Pulse
+0efe8,2019-06-11 08:00:53,Body water
+d93d8,2019-06-11 08:00:53,Blood pressure
+099bc,2019-06-11 08:00:53,Blood pressure
+0cda9,2019-06-11 08:20:51,Body water
+46286,2019-06-11 09:20:52,Blood pressure
+ab47a,2019-06-11 09:20:52,Blood pressure
+73f7c,2019-06-11 11:20:54,Blood pressure
+ab47a,2019-06-11 11:40:54,Blood pressure
+c5031,2019-06-11 12:02:11,Agitation
+93c14,2019-06-11 12:02:33,Agitation
+d93d8,2019-06-11 12:03:42,Blood pressure
+d7a46,2019-06-11 13:50:56,Blood pressure
+d7a46,2019-06-11 16:40:59,Blood pressure
+d7a46,2019-06-11 16:50:59,Blood pressure
+d7a46,2019-06-11 17:10:59,Blood pressure
+28710,2019-06-11 17:20:59,Blood pressure
+c5031,2019-06-11 18:02:00,Agitation
+ca44d,2019-06-11 18:11:00,Pulse
+0cda9,2019-06-12 08:00:13,Body water
+561af,2019-06-12 08:00:13,Body water
+d93d8,2019-06-12 08:00:13,Blood pressure
+393cb,2019-06-12 08:00:13,Blood pressure
+46286,2019-06-12 08:20:12,Blood pressure
+e87bd,2019-06-12 08:40:12,Blood pressure
+6b29b,2019-06-12 09:20:13,Blood pressure
+c5031,2019-06-12 12:01:26,Agitation
+ca44d,2019-06-12 15:40:19,Pulse
+d93d8,2019-06-13 08:00:35,Blood pressure
+0cda9,2019-06-13 08:00:35,Body water
+e8a78,2019-06-13 08:00:35,Blood pressure
+1fbe4,2019-06-13 08:50:34,Pulse
+93c14,2019-06-13 08:50:34,Blood pressure
+099bc,2019-06-13 09:40:34,Blood pressure
+30a32,2019-06-13 10:10:35,Blood pressure
+c5031,2019-06-13 12:01:44,Agitation
+73f7c,2019-06-13 12:01:47,Agitation
+65db4,2019-06-13 14:50:39,Body temperature
+ca44d,2019-06-13 16:10:40,Pulse
+a539e,2019-06-13 16:40:40,Blood pressure
+93c14,2019-06-13 18:01:59,Agitation
+28710,2019-06-13 19:50:43,Blood pressure
+28710,2019-06-13 19:50:43,Pulse
+0cda9,2019-06-14 08:00:54,Body water
+28710,2019-06-14 08:00:54,Blood pressure
+28710,2019-06-14 08:00:54,Pulse
+46286,2019-06-14 08:20:53,Blood pressure
+ca44d,2019-06-17 15:40:02,Pulse
+b9d58,2019-06-17 18:00:13,Agitation
+28710,2019-06-18 08:00:16,Pulse
+0efe8,2019-06-18 08:00:17,Body water
+561af,2019-06-18 08:00:17,Body water
+2f54b,2019-06-18 08:00:18,Weight
+46286,2019-06-18 08:10:14,Blood pressure
+d44d2,2019-06-18 09:50:16,Blood pressure
+ca44d,2019-06-18 15:40:22,Pulse
+393cb,2019-06-18 17:10:23,Blood pressure
+393cb,2019-06-18 17:50:23,Blood pressure
+73f7c,2019-06-18 18:01:15,Agitation
+28710,2019-06-19 08:00:36,Blood pressure
+28710,2019-06-19 08:00:36,Pulse
+e87bd,2019-06-19 08:00:36,Blood pressure
+d93d8,2019-06-19 08:10:34,Blood pressure
+eca1f,2019-06-19 08:50:34,Pulse
+d44d2,2019-06-19 09:20:35,Blood pressure
+393cb,2019-06-19 15:50:41,Blood pressure
+ca44d,2019-06-19 15:50:41,Pulse
+1fbe4,2019-06-20 08:00:57,Pulse
+c5785,2019-06-20 08:40:54,Blood pressure
+65db4,2019-06-20 10:10:56,Blood pressure
+46286,2019-06-20 10:20:56,Blood pressure
+ab47a,2019-06-20 10:20:56,Blood pressure
+93c14,2019-06-20 12:02:23,Agitation
+ca44d,2019-06-20 15:40:01,Pulse
+393cb,2019-06-20 15:50:01,Blood pressure
+73f7c,2019-06-20 18:00:59,Agitation
+46286,2019-06-21 08:20:14,Blood pressure
+1fbe4,2019-06-21 09:10:15,Pulse
+d44d2,2019-06-21 09:40:15,Blood pressure
+c5031,2019-06-21 12:01:26,Agitation
+46286,2019-06-21 12:01:30,Agitation
+93c14,2019-06-21 12:01:47,Agitation
+ca44d,2019-06-21 16:10:22,Pulse
+d93d8,2019-06-21 18:01:00,Agitation
+56b6b,2019-06-21 19:40:25,Blood pressure
+ab47a,2019-06-22 08:10:35,Body water
+ab47a,2019-06-22 08:10:35,Blood pressure
+ca44d,2019-06-22 15:50:42,Pulse
+d44d2,2019-06-23 08:20:55,Blood pressure
+201d8,2019-06-23 10:10:56,Blood pressure
+e2472,2019-06-23 10:20:57,Pulse
+561af,2019-06-23 12:20:59,Body water
+ca44d,2019-06-23 16:10:02,Pulse
+c55f8,2019-06-23 18:10:04,Blood pressure
+28710,2019-06-24 08:00:18,Blood pressure
+73f7c,2019-06-24 08:01:15,Agitation
+65db4,2019-06-24 11:20:18,Blood pressure
+28710,2019-06-25 08:00:38,Blood pressure
+c55f8,2019-06-25 08:20:35,Pulse
+385de,2019-06-25 08:50:36,Pulse
+d7a46,2019-06-25 11:50:38,Blood pressure
+ca44d,2019-06-25 12:40:40,Pulse
+0d5ef,2019-06-25 12:50:40,Blood pressure
+385de,2019-06-26 09:40:57,Pulse
+30a32,2019-06-26 10:50:58,Blood pressure
+7db78,2019-06-26 12:01:42,Agitation
+ca44d,2019-06-26 13:31:01,Pulse
+ca44d,2019-06-26 13:40:01,Pulse
+2f54b,2019-06-26 16:20:04,Blood pressure
+0d5ef,2019-06-26 18:01:28,Agitation
+fd100,2019-06-27 10:50:19,Blood pressure
+0d5ef,2019-06-27 11:10:20,Blood pressure
+ab47a,2019-06-27 11:20:20,Blood pressure
+96adf,2019-06-27 18:01:21,Agitation
+28710,2019-06-28 08:00:40,Blood pressure
+e2472,2019-06-28 09:40:39,Pulse
+93c14,2019-06-28 12:02:18,Agitation
+d7a46,2019-06-28 12:02:34,Agitation
+0d5ef,2019-06-28 13:20:43,Blood pressure
+0697d,2019-06-28 13:30:43,Blood pressure
+0697d,2019-06-28 13:30:43,Pulse
+2f54b,2019-06-28 13:40:43,Blood pressure
+ca44d,2019-06-28 15:40:45,Pulse
+8a835,2019-06-28 18:01:14,Agitation
+0d5ef,2019-06-28 18:02:11,Agitation
+d7a46,2019-06-28 18:02:21,Agitation
+56b6b,2019-06-29 08:00:59,Body water
+d93d8,2019-06-29 08:01:00,Weight
+d7a46,2019-06-29 08:01:00,Blood pressure
+d7a46,2019-06-29 08:01:00,Pulse
+93c14,2019-06-29 09:10:59,Blood pressure
+d7a46,2019-06-29 10:41:00,Blood pressure
+d7a46,2019-06-29 10:41:00,Pulse
+d7a46,2019-06-29 11:40:01,Blood pressure
+d7a46,2019-06-29 11:40:01,Pulse
+6b29b,2019-06-29 12:00:27,Agitation
+95899,2019-06-29 12:01:20,Agitation
+d7a46,2019-06-29 12:20:03,Pulse
+d7a46,2019-06-29 14:40:04,Pulse
+c55f8,2019-06-29 15:50:05,Pulse
+0697d,2019-06-29 16:50:06,Blood pressure
+95899,2019-06-29 18:01:14,Agitation
+28710,2019-06-30 08:00:22,Pulse
+ab47a,2019-06-30 09:50:20,Blood pressure
+0697d,2019-06-30 14:20:25,Pulse

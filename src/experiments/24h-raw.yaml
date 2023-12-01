@@ -1,0 +1,85 @@
+
+############################# General Settings ################################
+DPATH:      'data/'
+RESULT:   &result 'results/baseline'
+EXP_NAME: &exp 24h-raw
+
+############################# Data Settings ###################################
+SAMPLE_RATE: &sample_rate 1d #1h|2h|3h|1d?
+INCLUDE_DATA: &data [physiology, activity] #physiology, activity, sleep, demographics
+TARGET_VAR: &target [Agitation]
+TEST_DAYS: &testdays 7d   #number of days from the end to make test data
+WINDOW_SIZE: &window 7    #number of sampled data to make one instance
+BATCH_SIZE: &bs 128       #number of sample to make a batch
+
+############################# Experimetn Settings #############################
+TRAIN_SPLIT:
+  n_fold: 
+  test_ratio: 0.3 
+  test_window: *testdays
+  by: patient
+  
+TEST_SPLIT:
+  n_fold: 5
+  test_window: *testdays   
+  roll_window:  *window
+  normalize_type: global #global or by id
+  sample_rate: *sample_rate
+  look_ahead: 0 #sample rate (detect vs predict?)
+  use_cache: true
+
+
+SEED:       [42]
+LOGGING:    append     # append|reset
+
+MODEL_SELECTION:
+  mode: &mode min
+  metric: &metric valid_loss
+
+DL:
+
+  Data:
+    target_var: *target
+    include_data: *data
+    sample_rate: 12h
+
+  Train:
+    epoch: &epoch 50
+    lr: &lr [1e-4]
+    num_class: &nclass 2
+    device: &gpu 1
+    patience: 10
+    metric: *metric
+    mode: *mode
+    
+
+ML:
+  Data:
+    target_var: *target
+    include_data: *data
+
+
+SKIP_TRAIN: []
+SKIP_TEST:  []
+
+RUNS:
+
+  - name: MLP
+    extra_name: ""
+    hidden_layer_sizes: [[128,128], [26,26]]
+    max_iter: [300]
+    activation: ['tanh']
+    alpha: [1e-3]
+    early_stopping: [true]
+    save_intermediate: true
+
+  - name: LSTM
+    hidden_size: [128]
+    dropout: [0.2]
+    batch_normalize: [False]
+    save_intermediate: true
+
+  - name: GBM
+    n_estimators: [20]
+    min_samples_leaf: [1]
+

@@ -1,0 +1,90 @@
+DPATH: data/
+RESULT: results/baseline
+RUNS:
+- name: MLP
+  extra_name: ''
+  hidden_layer_sizes:
+  - - 128
+    - 128
+  - - 26
+    - 26
+  max_iter:
+  - 300
+  activation:
+  - tanh
+  alpha:
+  - 0.001
+  early_stopping:
+  - true
+  save_intermediate: true
+- name: LSTM
+  hidden_size:
+  - 128
+  dropout:
+  - 0.2
+  batch_normalize:
+  - false
+  save_intermediate: true
+- name: GBM
+  n_estimators:
+  - 20
+  min_samples_leaf:
+  - 1
+SEED:
+- 42
+TRAIN_SPLIT:
+  by: patient
+  n_fold: null
+  test_ratio: 0.3
+  test_window: 7d
+TEST_SPLIT:
+  look_ahead: 0
+  roll_window: 7
+  sample_rate: 1d
+  test_window: 7d
+  n_fold: 5
+  normalize_type: global
+  use_cache: true
+LOGGING: append
+MODEL_SELECTION:
+  mode: min
+  metric: valid_loss
+DL:
+  Data:
+    target_var:
+    - Agitation
+    include_data:
+    - physiology
+    - activity
+    sample_rate: 12h
+  Train:
+    epoch: 50
+    lr:
+    - 0.0001
+    num_class: 2
+    device: 1
+    patience: 10
+    metric: valid_loss
+    mode: min
+ML:
+  Data:
+    target_var:
+    - Agitation
+    include_data:
+    - physiology
+    - activity
+    sample_rate: null
+  Train: {}
+EARLY_STOPPING: null
+TEST_DAYS: 7d
+WINDOW_SIZE: 7
+SKIP_TRAIN: []
+SKIP_TEST: []
+BATCH_SIZE: 128
+SAMPLE_RATE: 1d
+INCLUDE_DATA:
+- physiology
+- activity
+TARGET_VAR:
+- Agitation
+EXP_NAME: 24h-raw
