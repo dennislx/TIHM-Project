@@ -1,0 +1,13 @@
+cmat
+einops
+joblib
+marshmallow
+marshmallow_dataclass
+matplotlib
+numpy
+omegaconf
+pandas
+scikit_learn
+torch
+tqdm
+xgboost
