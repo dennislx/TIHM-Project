@@ -5,6 +5,35 @@ from sklearn.metrics import roc_auc_score
 import torch
 import numpy as np
 import random
+import tempfile
+
+
+def create_tmpfile(suffix, prefix):
+    model_path = None
+    while True:
+        _, model_path = tempfile.mkstemp(suffix=suffix, prefix=prefix)
+        if not os.path.exists(model_path): break
+    return model_path
+
+class TempFile:
+    def __init__(self, dir=os.getcwd(), suffix='.job', prefix='best_model_'):
+        os.makedirs(dir + '/temporary_folder', exist_ok=True)
+        file_ptr, self.__file_path = tempfile.mkstemp(dir=f'{dir}/temporary_folder', suffix=suffix, prefix=prefix)
+        os.close(file_ptr)
+    @property
+    def path(self): return self.__file_path
+    def close(self):
+        try: os.remove(self.__file_path)
+        except OSError as e: print(f"Error: {self.file_path} cannot be deleted. {e}")
+
+
+
+
+def create_tmpfile(suffix):
+    cur_dir = os.getcwd()
+    while True:
+        model_path = tempfile.NamedTemporaryFile(delete=False, dir=f'{cur_dir}/temporary_folder', suffix='.job', prefix='best_model_')
+
 
 def validate_class(choices):
     def decorator(cls):
@@ -51,12 +80,16 @@ class ConfusionMatrix(cmat.ConfusionMatrix):
     def create(cls, y_true, y_pred, y_prob=None, loss=None, labels=None, names=None ):
         confusion_matrix = cmat.create(y_true, y_pred, labels, names).cmat
         cmatrix = cls(confusion_matrix)
-        cmatrix.roc_auc = roc_auc_score(y_true, y_prob) if y_prob is not None else 'nan'
+        try:
+            cmatrix.roc_auc = roc_auc_score(y_true, y_prob)
+        except (TypeError, ValueError):
+            cmatrix.roc_auc = 'nan'
         cmatrix.loss = loss if loss is not None else 'nan'
         return cmatrix
     @property
     def report(self): return {'rocauc': self.roc_auc, 'loss': self.loss, **super().report}
 
+from sklearn.utils._param_validation import InvalidParameterError
 
 def merge_dict(dict_a, dict_b, prefix_a='a', prefix_b='b'):
     merged_dict = {}

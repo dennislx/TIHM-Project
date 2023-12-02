@@ -26,7 +26,7 @@ import pandas as pd
 import numpy as np
 from enum import Enum
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.impute import SimpleImputer, KNNImputer
+from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import compute_sample_weight
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
@@ -40,6 +40,7 @@ from torch.utils.data import Dataset, DataLoader
 
 pjoin = lambda *x: os.path.join(*x)
 pfold = lambda x: os.path.dirname(x)
+pnorm = lambda x: os.path.normpath(x)
 
 class AUGMENT(Enum):
     RAW = 1
@@ -198,12 +199,13 @@ def do_rolling(window_length, look_ahead, processed_data):
 
 class Instances:
 
-    def __init__(self, data_df, target, date, sample_rate=None, feature_name=None, patient_id=None, np_data=None, result_path='./', result_name='baseline', label_info={0: 'NEG', 1: 'POS'}):
+    def __init__(self, data_df, target, date, sample_rate=None, feature_name=None, patient_id=None, np_data=None, sample_weight=None, result_path='./', result_name='baseline', label_info={0: 'NEG', 1: 'POS'}):
         self._data_df = data_df
         self.target = target
         self.date = date
         self.np_data = np_data
         self.sample_rate = sample_rate
+        self.sample_weight = sample_weight or compute_sample_weight(class_weight='balanced', y=target)
         self.feature_name = feature_name
         self.patient_id = patient_id
         self.result_path = result_path
@@ -223,7 +225,8 @@ class Instances:
         end_date = self.end
         for i in range(n_fold):
             test_start = end_date - pd.to_timedelta(test_window)
-            yield i+1, *self.get_subsample(test_start=test_start)
+            train_subsample, test_subsample = self.get_subsample(test_start=test_start)
+            yield (i+1, train_subsample, test_subsample)
             end_date = test_start
     
     def get_patient_split(self, n_fold, test_ratio=None):
@@ -236,10 +239,12 @@ class Instances:
         elif n_fold and n_fold > 1: 
             ks = StratifiedKFold(n_fold)
             for i, (_, test_idx) in enumerate(ks.split(patient, target)):
-                yield i+1, *self.get_subsample(patient[test_idx])
+                train_subsample, test_subsample = self.get_subsample(patient[test_idx])
+                yield (i+1, train_subsample, test_subsample)
         elif test_ratio is not None and 0 < test_ratio < 1:
             _, test_patient, _, _ = train_test_split(patient, target, test_size=test_ratio)
-            yield 1, *self.get_subsample(test_patient)
+            train_subsample, test_subsample = self.get_subsample(test_patient)
+            yield (1, train_subsample, test_subsample)
         else:
             raise NotImplementedError
 
@@ -262,23 +267,24 @@ class Instances:
     @property
     def end(self): return self.date.max()
     def __getitem__(self, key): return getattr(self, key)
-    def keys(self): return ['np_data', 'date', 'target', 'patient_id', 'feature_name']
+    def keys(self): return ['np_data', 'date', 'target', 'patient_id', 'feature_name', 'sample_weight']
     def __len__(self): return len(self.target)
 
-    def to_dataloader(self, batch_size, include_time=False, shuffle=False):
+    def to_dataloader(self, stage, batch_size, include_time=False, weight_sample=True):
         global BATCH_INFO 
-        BATCH_INFO = {'include_time': include_time, 'feature_name': list(self.feature_name)}
-        return DataLoader(AgitationDataset(self), batch_size, shuffle, collate_fn=AgitationDataset.make_batch)
+        BATCH_INFO = {'include_time': include_time, 'feature_name': list(self.feature_name), 'weight_sample': weight_sample}
+        kwargs = dict(shuffle=True, drop_last=True)
+        stage != 'train' and kwargs.update(shuffle=False, drop_last=False)
+        return DataLoader(AgitationDataset(self), batch_size=batch_size, collate_fn=AgitationDataset.make_batch, **kwargs)
 
 class AgitationDataset(Dataset):
 
     def __init__(self, data: Instances):
-        np_data, target, date, patient = operator.attrgetter('np_data','target','date','patient_id')(data)
-        self.np_data = np_data
-        self.target  = target.squeeze()
-        self.dayhour = utils.process_date(pd.to_datetime(date), data.sample_rate)
-        self.patient = patient[:, 0]
-        self.sampel_weight = compute_sample_weight(class_weight='balanced', y=self.target)
+        self.np_data = data.np_data
+        self.target = data.target.squeeze()
+        self.dayhour = utils.process_date(pd.to_datetime(data.date), data.sample_rate)
+        self.patient = data.patient_id[:, 0]
+        self.sampel_weight = data.sample_weight
 
     def __getitem__(self, index):
         return { 
@@ -298,11 +304,13 @@ class AgitationDataset(Dataset):
             time = np.stack([d['t'] for d in batch])
             feature = np.concatenate((feature, time), axis=-1)
             BATCH_INFO['feature_name'].extend([f't_time_{i}' for i in range(time.shape[-1])])
-        return {
+        rtn_batch = {
             'x': torch.tensor(feature, dtype=torch.float32),
             'y': torch.tensor(target, dtype=torch.long),
-            'sw': torch.tensor(sample_weight, dtype=torch.float32)
         }
+        if BATCH_INFO.get('weight_sample') == True:
+            rtn_batch['sw'] = torch.tensor(sample_weight, dtype=torch.float32)
+        return rtn_batch
 
     
 class TIHM:
@@ -310,6 +318,7 @@ class TIHM:
     DATA_NAMES = ["activity", "sleep", "physiology", "labels", "demographics"]
     STATISTICS = ["max", "mean", "std", "sum"]
     TARGET_NAMES = ['Blood pressure', 'Agitation', 'Body water', 'Pulse', 'Weight', 'Body temperature']
+    DEFAULT_CACHE_PATH = "{data_cache_dir}/cached/{prefix}-{self.result_name}-f{fold}-l{look_ahead}-n{normalize_type[0]}-s{roll_window}-s{self.sample_rate}-t{test_window}.job"
 
     def __init__( self, root = "./", result_path = './', target_var='Agitation', include_data = DATA_NAMES, sample_rate=None, **kwargs):
         self.root = root
@@ -327,27 +336,32 @@ class TIHM:
         
     def evaluate_split(self, n_fold, test_window, roll_window, look_ahead, normalize_type='global', prefix='ml', **kwargs):
         self.sample_rate = self.sample_rate or kwargs.get('sample_rate', '1d')
-        use_cache = kwargs.get('use_cache', True)
+        use_cache = kwargs.get('use_cache', False)
+        data_cache_dir = self.result_path
+        data_cache_path = kwargs.get('data_cache_path', self.DEFAULT_CACHE_PATH)
+        if isinstance(use_cache, str) and os.path.isdir(pjoin(use_cache, 'cached')):
+            data_cache_dir = use_cache
         data, target = self.data, self.target
         global logger
-        logger = utils.get_logger(self.result_path)
+        logger = utils.get_logger(name=self.result_path)
         end_date = self.date.max()
         for i in range(n_fold):
             test_start = end_date - pd.to_timedelta(test_window)
-            data_cache_path = pjoin( self.result_path, 'cached', f'{prefix}-{self.result_name}-f{i+1}-l{look_ahead}-n{normalize_type[0]}-r{roll_window}-s{self.sample_rate}-t{test_window}.job')
-            logger.info('-'*100 + f"\nFold {i+1}: Starts @ {utils.now()}")
-            if use_cache and os.path.exists(data_cache_path):
-                logger.info("\tLoading preprocessed data from %s"%data_cache_path)
-                train_ds, test_ds = joblib.load(data_cache_path)
+            fold = i + 1
+            CACHE_PATH = pnorm(data_cache_path.format(**locals()))
+            logger.info('-'*100 + f"\nFold {fold}: Starts @ {utils.now()}")
+            if use_cache and os.path.exists(CACHE_PATH):
+                logger.info("\tLoading preprocessed data from %s"%CACHE_PATH)
+                train_ds, test_ds = joblib.load(CACHE_PATH)
             else:
                 test_end = test_start + pd.to_timedelta(test_window)
                 train_X, test_X = data.query('date < @test_start'), data.query('date <= @test_end & date >= @test_start')
                 train_y, test_y = target.query('date < @test_start'), target.query('date >= @test_start & date <= @test_end')
                 test_ds, train_ds = do_transform(normalize_type, train_X, test_X, train_y, test_y, self.sample_rate)
                 test_ds, train_ds = map(functools.partial(do_rolling, roll_window, look_ahead), (test_ds, train_ds))
-                logger.info("Save preprocessed data to %s"%data_cache_path)
-                os.makedirs(pfold(data_cache_path), exist_ok=True)
-                joblib.dump((train_ds, test_ds), data_cache_path)
+                logger.info("Save preprocessed data to %s"%CACHE_PATH)
+                os.makedirs(pfold(CACHE_PATH), exist_ok=True)
+                joblib.dump((train_ds, test_ds), CACHE_PATH)
             train_data = Instances(**train_ds)
             logger.info(f"Fold {i+1}: Data information: ")
             log_summary(train_data, 'Training Sample:', '\t')

@@ -1,5 +1,30 @@
 DPATH: data/
 RESULT: results/baseline
+VARIABLE:
+  SAMPLE_RATE: 1d
+  INCLUDE_DATA:
+  - physiology
+  - activity
+  TARGET_VAR:
+  - Agitation
+  TEST_DAYS: 7d
+  WINDOW_SIZE: 7
+  BATCH_SIZE: 128
+  WEIGHT_SAMPLE: true
+TRAIN_SPLIT:
+  by: patient
+  n_fold: null
+  test_ratio: 0.3
+  test_window: 7d
+TEST_SPLIT:
+  data_cache_path: '{data_cache_dir}/cached/{prefix}-{self.result_name}-f{fold}-l{look_ahead}-n{normalize_type[0]}-r{roll_window}-s{self.sample_rate}-t{test_window}.job'
+  sample_rate: 1d
+  normalize_type: global
+  look_ahead: 0
+  roll_window: 7
+  test_window: 7d
+  n_fold: 5
+  use_cache: results/baseline
 RUNS:
 - name: MLP
   extra_name: ''
@@ -19,10 +44,17 @@ RUNS:
   save_intermediate: true
 - name: LSTM
   hidden_size:
+  - 32
+  - 64
   - 128
   dropout:
-  - 0.2
-  batch_normalize:
+  - 0.0
+  - 0.1
+  - 0.3
+  num_layers:
+  - 1
+  bidirectional:
+  - true
   - false
   save_intermediate: true
 - name: GBM
@@ -30,25 +62,9 @@ RUNS:
   - 20
   min_samples_leaf:
   - 1
-SEED:
-- 42
-TRAIN_SPLIT:
-  by: patient
-  n_fold: null
-  test_ratio: 0.3
-  test_window: 7d
-TEST_SPLIT:
-  look_ahead: 0
-  roll_window: 7
-  sample_rate: 1d
-  test_window: 7d
-  n_fold: 5
-  normalize_type: global
-  use_cache: true
-LOGGING: append
 MODEL_SELECTION:
-  mode: min
-  metric: valid_loss
+  mode: max
+  metric: valid_f1score
 DL:
   Data:
     target_var:
@@ -56,16 +72,21 @@ DL:
     include_data:
     - physiology
     - activity
-    sample_rate: 12h
+    sample_rate: 1d
   Train:
-    epoch: 50
+    metric: valid_f1score
+    mode: max
+    patience:
+    - 10
+    num_class: 2
+    batch_size: 128
+    weight_sample: true
+    epoch: 100
     lr:
     - 0.0001
-    num_class: 2
+    - 0.0005
+    - 0.001
     device: 1
-    patience: 10
-    metric: valid_loss
-    mode: min
 ML:
   Data:
     target_var:
@@ -73,18 +94,22 @@ ML:
     include_data:
     - physiology
     - activity
-    sample_rate: null
-  Train: {}
-EARLY_STOPPING: null
-TEST_DAYS: 7d
-WINDOW_SIZE: 7
-SKIP_TRAIN: []
+    sample_rate: 1d
+  Train:
+    weight_sample: true
+SKIP_TRAIN:
+- MLP
+- GBM
 SKIP_TEST: []
-BATCH_SIZE: 128
-SAMPLE_RATE: 1d
-INCLUDE_DATA:
-- physiology
-- activity
-TARGET_VAR:
-- Agitation
-EXP_NAME: 24h-raw
+REPORT:
+  select_query: stage != "valid"
+  group_column:
+  - model
+  - stage
+  exclude_column:
+  - fold
+  - seed
+SEED:
+- 42
+EXP_NAME: 24h-skip
+LOGGING: reset

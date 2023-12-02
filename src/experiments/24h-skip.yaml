@@ -2,19 +2,20 @@
 ############################# General Settings ################################
 DPATH:      'data/'
 RESULT:   &result 'results/baseline'
-EXP_NAME: &exp 24h-raw
+EXP_NAME: &exp 24h-skip
 
 ############################# Data Settings ###################################
-SAMPLE_RATE: &sample_rate 1d #1h|2h|3h|1d?
-INCLUDE_DATA: &data [physiology, activity] #physiology, activity, sleep, demographics
-TARGET_VAR: &target [Agitation]
-TEST_DAYS: &testdays 7d   #number of days from the end to make test data
-WINDOW_SIZE: &window 7    #number of sampled data to make one instance
-BATCH_SIZE: &bs 128       #number of sample to make a batch
+VARIABLE:
+  SAMPLE_RATE: &sample_rate 1d #1h|2h|3h|1d?
+  INCLUDE_DATA: &in_data [physiology, activity] #physiology, activity, sleep, demographics
+  TARGET_VAR: &target [Agitation]
+  TEST_DAYS: &testdays 7d   #number of days from the end to make test data
+  WINDOW_SIZE: &window 7    #number of sampled data to make one instance
+  BATCH_SIZE: &bs 128       #number of sample to make a batch
+  WEIGHT_SAMPLE: &sw true   #weight each sample by its prior belief
 
 ############################# Experimetn Settings #############################
 TRAIN_SPLIT:
-  n_fold: 
   test_ratio: 0.3 
   test_window: *testdays
   by: patient
@@ -26,41 +27,52 @@ TEST_SPLIT:
   normalize_type: global #global or by id
   sample_rate: *sample_rate
   look_ahead: 0 #sample rate (detect vs predict?)
-  use_cache: true
+  use_cache: 'results/baseline'
+  data_cache_path: '{data_cache_dir}/cached/{prefix}-{self.result_name}-f{fold}-l{look_ahead}-n{normalize_type[0]}-r{roll_window}-s{self.sample_rate}-t{test_window}.job'
 
 
 SEED:       [42]
-LOGGING:    append     # append|reset
+LOGGING:    reset     # append|reset
 
 MODEL_SELECTION:
-  mode: &mode min
-  metric: &metric valid_loss
+  mode: &mode max
+  metric: &metric valid_f1score
 
 DL:
-
   Data:
     target_var: *target
-    include_data: *data
-    sample_rate: 12h
+    include_data: *in_data
+    sample_rate: 1d
 
   Train:
-    epoch: &epoch 50
-    lr: &lr [1e-4]
+    epoch: &epoch 100
+    lr: &lr [1e-4,5e-4,1e-3]
     num_class: &nclass 2
     device: &gpu 1
-    patience: 10
+    patience: [10]
     metric: *metric
     mode: *mode
+    weight_sample: *sw
+    batch_size: *bs
     
 
 ML:
   Data:
     target_var: *target
-    include_data: *data
+    include_data: *in_data
 
+  Train:
+    weight_sample: *sw
 
-SKIP_TRAIN: [MLP, LSTM, GBM]
-SKIP_TEST:  [MLP, LSTM, GBM]
+# skip training and testing (match their running name + extraname)
+SKIP_TRAIN: [MLP, GBM]
+SKIP_TEST:  []
+
+# how to aggregate final train-val-test result and report in paper
+REPORT:
+  group_column: ['model', 'stage']
+  exclude_column: ['fold', 'seed']
+  select_query: 'stage != "valid"'
 
 RUNS:
 
@@ -74,12 +86,12 @@ RUNS:
     save_intermediate: true
 
   - name: LSTM
-    hidden_size: [128]
-    dropout: [0.2]
-    batch_normalize: [False]
+    hidden_size: [32, 64, 128]
+    dropout: [0.0, 0.1, 0.3]
+    num_layers: [1]
+    bidirectional: [true, false]
     save_intermediate: true
 
   - name: GBM
     n_estimators: [20]
     min_samples_leaf: [1]
-

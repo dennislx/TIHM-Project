@@ -11,3 +11,4 @@ scikit_learn
 torch
 tqdm
 xgboost
+tabulate

@@ -47,7 +47,7 @@ def run(c: utils.Config):
         "ML": datamodule.TIHM(c.DPATH, c.RESULT, **c.ML.Data),
         "DL": datamodule.DIHM(c.DPATH, c.RESULT, **c.DL.Data)
     }
-    logger = utils.get_logger(name=c.RESULT, savepath=utils.pjoin(c.RESULT, f'{c.EXP_NAME}.txt'))
+    logger = utils.get_logger(name=c.RESULT, savepath=utils.pjoin(c.RESULT, f'{c.EXP_NAME}.txt'), filemode=c.LOGGING)
     logger.info(f'\n\n\n'+'*'*100)
     for seed in c.SEED:
         mutils.seed_everything()
@@ -84,7 +84,7 @@ def run(c: utils.Config):
                 logger.info(f"\nFinish Model ({Name}) @ {utils.now()}")
                 logger.info('\n' + Recorder.summary(**hist_index).to_string())
             logger.info("*"*100 + '\n\n')
-    utils.summarize(all_runs, c.RESULT, savepath=utils.pjoin(c.RESULT, 'end_results.csv'))
+    utils.summarize(all_runs, logname=c.RESULT, savepath=utils.pjoin(c.RESULT, f'{c.EXP_NAME}_end_results.csv'), **c.REPORT)
             
 ############################################
 ## Parse Argument

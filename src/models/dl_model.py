@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import operator
-import tempfile
 import models.utils as utils
 from tqdm import tqdm
 from enum import Enum
@@ -61,7 +60,7 @@ class Action(Enum):
     Stop = 2
     Ignore = 3
 
-class ModelCheckpoint:
+class EarlyStopping:
     
     def __init__(self, mode, patience=None, delta=0, save_path=None):
         self.mode = mode
@@ -140,6 +139,8 @@ class Trainer:
         self.device != 'cpu' and move_to_device(saved_d, self.device)
         model_output = self.model(**batch_d).squeeze()
         # ------------- Probably I need to implement the following a lot more flexible ------------
+        if model_output.ndim == 1: # in case there is only one sample
+            model_output = model_output.unsqueeze(0)
         loss = self.calculate_loss(y_pred=model_output, **saved_d)
         y_prob = F.softmax(model_output, dim=1)[:, 1]         # y_prob = torch.sigmoid(model_output)
         # -----------------------------------------------------------------------------------------
@@ -147,10 +148,10 @@ class Trainer:
         return loss, saved_d
 
     def train(self, train_dl, val_dl):
-        checkpoint = ModelCheckpoint(self.mode, self.patience)
+        earlystop = EarlyStopping(self.mode, self.patience)
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
         device = torch.device('cuda:' + str(self.device) if torch.cuda.is_available() else 'cpu')
-        _, model_path = tempfile.mkstemp(suffix='.job', prefix='best_model_')
+        tempsaver = utils.TempFile()
         self.model.to(device)
         train_results, valid_results = [], []
         pbar = tqdm(range(self.epoch))
@@ -168,12 +169,13 @@ class Trainer:
             valid_results.append(self.predict(val_dl))
             train_val_res = utils.merge_dict(train_results[i].report, valid_results[i].report, 'train', 'valid')
             pbar.set_postfix(train_loss=train_val_res['train_loss'], val_loss=train_val_res['valid_loss'])
-            next_step = checkpoint.should_stop(train_val_res[self.metric])
+            next_step = earlystop.should_stop(train_val_res[self.metric])
             if next_step == Action.Save:
-                self.save_model(model_path, {'epoch': i})
+                self.save_model(tempsaver.path, {'epoch': i})
             elif next_step == Action.Stop:
                 break
-        best_epoch = self.load_model(model_path)['epoch']
+        best_epoch = self.load_model(tempsaver.path)['epoch']
+        tempsaver.close()
         return train_results[best_epoch], valid_results[best_epoch]
 
     def predict(self, test_dl):

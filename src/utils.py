@@ -12,10 +12,11 @@ from datetime import datetime
 from omegaconf import OmegaConf, ListConfig
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 from dataclasses import dataclass, field 
-from marshmallow_dataclass import class_schema
-from marshmallow import validate as V
+from marshmallow_dataclass import class_schema, dataclass as ma_dataclass, NewType
+from marshmallow import fields as ma_fields, validate as V, Schema, post_load
 from collections import Counter, defaultdict
-
+from enum import Enum
+from tqdm import tqdm
 
 now = lambda: datetime.now().strftime('%d/%m at %H:%M:%S')
 
@@ -121,14 +122,15 @@ def aggregate_metrics(df, group_by_columns, exclude_columns=[]):
     merged_df = merged_df['mean'] + '(' + merged_df['std'] + ')'
     return merged_df
         
-def summarize(runs, logname, savepath):
+def summarize(runs, logname, savepath, group_column, exclude_column, select_query):
     # pd.read_csv(savepath, index=[0])
     res_df = pd.concat([r.summary() for _,_,r in runs])
-    print("*"*80 + "\nAll running results: ")
-    agg_df = aggregate_metrics(res_df, ['model', 'stage'], ['fold', 'seed'])
+    agg_df = aggregate_metrics(res_df, group_column, exclude_column)
+    if select_query is not None:
+        agg_df = agg_df.query(select_query)
     res_df.to_csv(savepath)
     logger = get_logger(logname)
-    logger.info("*"*200 + "Final Result\n" + agg_df.to_markdown())
+    logger.info("*"*80 + "\nFinal Result\n" + agg_df.to_markdown())
     
 
 class ModelSelect:
@@ -188,7 +190,7 @@ def cross_validation(data, model_cls, model_args, model_path, config, save_inter
     ms = ModelSelect(**config.MODEL_SELECTION)
     train_result, val_result, all_cm_result = {}, {}, []
     model_args = {**config.get(model_cls.framework)['Train'], **model_args}
-    for i, train_args in enumerate(grid_search(model_args)):
+    for train_args in tqdm(grid_search(model_args)):
         train_score, val_score = Averager(), Averager()
         split_args = config.TRAIN_SPLIT.to_dict(n_fold=train_args.get('n_fold'), avoid_none=True)
         select_metric = train_args.get('metric', ms.metric)
@@ -199,8 +201,8 @@ def cross_validation(data, model_cls, model_args, model_path, config, save_inter
                 train_report = evaluate(model, train, **predict_args)
                 val_report = evaluate(model, val, **predict_args)
             elif model_cls.framework == 'DL':
-                BATCH_INFO = {'batch_size': config.BATCH_SIZE}
-                train_dl, val_dl = train.to_dataloader(shuffle=True, **BATCH_INFO), val.to_dataloader(**BATCH_INFO)
+                BATCH_INFO = {'batch_size': train_args.get('batch_size'), 'weight_sample': train_args.get('weight_sample')}
+                train_dl, val_dl = train.to_dataloader(stage='train', **BATCH_INFO), val.to_dataloader(stage='valid', **BATCH_INFO)
                 _, sequence_length, input_dim = next(iter(train_dl))['x'].shape
                 train_args.update(input_dim=input_dim, sequence_length=sequence_length)
                 model_arg, model = model_cls.create(**train_args)
@@ -224,7 +226,7 @@ def evaluate(model, data, return_report=False, **evaluate_args):
         output = model.predict(**data, **evaluate_args)
         to_rtn = ConfusionMatrix.create(data.target.squeeze(), **output)
     elif model.framework == 'DL':
-        to_rtn = model.predict(data.to_dataloader(batch_size=512))
+        to_rtn = model.predict(data.to_dataloader(stage='test', batch_size=512))
     return to_rtn.report if return_report else to_rtn
 
 def save_command(path):
@@ -239,7 +241,9 @@ def grid_search(args):
         for a in args
     ])
 
-def get_logger(name, savepath=None, debug_mode=False, filemode='append'):
+
+
+def get_logger(name, savepath=None, debug_mode=False, filemode='a'):
     if debug_mode: loglevel = logging.DEBUG
     else:          loglevel = logging.INFO
     logger = logging.getLogger(name=name)
@@ -247,7 +251,7 @@ def get_logger(name, savepath=None, debug_mode=False, filemode='append'):
     loglevel = logging.getLevelName(logger.getEffectiveLevel())
     logger.setLevel(loglevel)
     if savepath is not None:
-        fh = logging.FileHandler(savepath)
+        fh = logging.FileHandler(savepath, mode=filemode.value)
         fh.setLevel(loglevel)
         formatter = logging.Formatter( '[%(levelname)s] %(message)s' )
         fh.setFormatter(formatter)
@@ -295,6 +299,8 @@ class BaseScheme:
             for k,v in kwargs.items():
                 if v is None: merged_dict[k] = self[k]
         return merged_dict
+    
+desc = lambda x, **y: dict(description=x, **y)
         
 @dataclass
 class ResultScheme(BaseScheme):
@@ -311,76 +317,113 @@ class DataScheme(BaseScheme):
     patient_id:     np.ndarray
     sample_rate:    Optional[str]
     feature_name:   List[str]
+    sample_weight:  Optional[np.ndarray] = None
 
 @dataclass
 class TestSplitScheme(BaseScheme):
-    look_ahead: int 
-    roll_window: int
-    sample_rate: str
-    test_window: str = '1d'
-    n_fold: int = 1
-    normalize_type: str = 'global'
-    use_cache: bool = True
+    data_cache_path: Optional[str] = field(metadata=desc('the path where we store preprocessed data'))
+    sample_rate: Optional[str] = field(metadata=desc('the frequency of data points to make one task instance'))
+    normalize_type: Optional[str] = field(default='global', metadata=desc('how to normalize features? either by subject ID or globally per feature', validate=V.OneOf(['global', 'id'])))
+    look_ahead: int = field(default=0, metadata=desc('how far ahead in time you want to make predictions'))
+    roll_window: int = field(default=0, metadata=desc('how to create overlapping windows to learn from different portions of the time series data'))
+    test_window: str = field(default='1d', metadata=desc('the time period after the "test_start" date used for allocating data to the test dataset'))
+    n_fold: int = field(default=1, metadata=desc('the number of folds or partitions used for data splitting.'))
+    use_cache: Union[bool, str] = field(default=True, metadata=desc('should we use the cache or rerun the data pipeline'))
 
 @dataclass
 class TrainSplitScheme(BaseScheme):
-    by: str = field(metadata={'validate': V.OneOf(['patient', 'time'])})
-    n_fold: Optional[int] = None
-    test_ratio: Optional[float] = None
-    test_window: Optional[str] = None
+    by: str = field(metadata=desc('either splitting dataset by patient id or by test starting time', validate=V.OneOf(['patient', 'time'])))
+    n_fold: Optional[int] = field(metadata=desc('the number of folds or partitions used for data splitting.'))
+    test_ratio: Optional[float] = field(metadata=desc('the proportion of data allocated for testing'))
+    test_window: Optional[str] = field(metadata=desc('the time period after the "test_start" date used for allocating data to the test dataset'))
 
 metric_regex = fr'^(train|valid|test)_({"|".join(ConfusionMatrix.METRICS)})$'
 @dataclass
 class ModelSelectScheme(BaseScheme):
-    mode: str = field(metadata={'validate': V.OneOf(['min', 'max'])})
-    metric: str = field(metadata={'validate': V.Regexp(metric_regex)})
+    mode: str = field(metadata=desc('either min|max a monitored metric to select best model', validate = V.OneOf(['min', 'max'])))
+    metric: str = field(metadata=desc('what monitored metric to use in model selection', validate = V.Regexp(metric_regex)))
 
 @dataclass
 class EarlyStopScheme(BaseScheme):
-    mode: str = field(metadata={'validate': V.OneOf(['min', 'max'])})
-    metric: str = field(metadata={'validate': V.Regexp(metric_regex)})
-    patience:  Optional[int]
-    min_delta: Optional[float]
+    mode: str = field(metadata=desc('either min|max a monitored metric to determine when to stop training', validate = V.OneOf(['min', 'max'])))
+    metric: str = field(metadata=desc('what monitored metric to use in determining early stopping', validate = V.Regexp(metric_regex)))
+    patience:  Optional[int] = field(metadata=desc('the number of epochs to wait before stopping training if no improvement in the monitored metric'))
+    min_delta: Optional[float] = field(metadata=desc('the minimum change in the monitored metric required to be considered as an improvement'))
 
 @dataclass
 class FrameDataScheme(BaseScheme):
-    target_var: List[str]
-    include_data: List[str]
-    sample_rate: Optional[str] = None
-    
+    target_var: List[str] = field(default_factory=lambda: ['Agitation'], metadata=desc('the dependent variable or label in supervised learning tasks', validate=V.ContainsOnly(['Agitation'])))
+    include_data: List[str] = field(default_factory=lambda: ['activity'], metadata=desc('the data file names used in calculating input features', validate=V.ContainsOnly(['physiology', 'activity', 'sleep', 'demographics'])))
+    sample_rate: Optional[str] = field(default='1d', metadata=desc('sampling frequency for original time series data, such as 2h and 1d'))
+
+ListInt = NewType('ListInt', List[int])
+class ListValidator:
+    def __init__(self, type=int): self.type = type
+    def __call__(self, val): 
+        if isinstance(val, List) and not np.all(np.array(val).dtype == self.type):
+            return False
+        return True
+
+@dataclass    
+class FrameMLTrainScheme(BaseScheme):
+    weight_sample: Optional[Union[bool, List[bool]]] = field(default=True, metadata=desc('should we adjust the importance of each sample in training according to its class label'))
+
 @dataclass
-class FrameworkScheme(BaseScheme):
+class FrameDLTrainScheme(BaseScheme):
+    metric: str = field(metadata=desc('what monitored metric to use in determining early stopping', validate = V.Regexp(metric_regex)))
+    mode: str = field(metadata=desc('either min|max a monitored metric to determine when to stop training', validate = V.OneOf(['min', 'max'])))
+    patience: Optional[Union[int, List[int]]] = field(metadata=desc('the number of epochs to wait before stopping training if no improvement in the monitored metric'))
+    num_class: int = field(metadata=desc('the total distinct categories or classes that a classification model aims to predict'))
+    batch_size: Union[int, List[int]] = field(metadata=desc('number of sample to make a batch'))
+    weight_sample: Optional[Union[bool, List[bool]]] = field(default=True, metadata=desc('should we adjust the importance of each sample in training according to its class label'))
+    epoch: Union[int, List[int]] = field(default=50, metadata=desc('how many complete pass through the entire training dataset during the trianing stage', validate=V.Range(min=0)))
+    lr: Union[float, List[float]] = field(default=1e-3, metadata=desc('the step size at which a neural network updates its weights during the training'))
+    device: int = field(default=1, metadata=desc('which GPU to use for training a deep learning model'))
+    
+
+@dataclass
+class FrameworkDLScheme(BaseScheme):
     Data:   FrameDataScheme
-    Train:  Optional[Dict] = field(default_factory=lambda: {})
+    Train:  FrameDLTrainScheme = field(default_factory=lambda: {})
+
+@dataclass
+class FrameworkMLScheme(BaseScheme):
+    Data:   FrameDataScheme
+    Train:  FrameMLTrainScheme = field(default_factory=lambda: {})
+
+class LoggingScheme(Enum):
+    append = 'a'
+    reset  = 'w'
+
+@dataclass
+class ReportScheme(BaseScheme):
+    select_query: Optional[str] = field(metadata=desc('query to select records from final resulting table'))
+    group_column: List[str] = field(default_factory=lambda: ['model', 'stage'], metadata=desc('specified columns for aggregation'))
+    exclude_column: List[str] = field(default_factory=lambda: ['fold', 'seed'], metadata=desc('columns to exclude when doing statistic calculations'))
 
 @dataclass
 class ConfigScheme(BaseScheme):
-    DPATH: str
-    RESULT: str
-    RUNS: Optional[List[Dict]]
-    SEED: List[int]
-    TRAIN_SPLIT: TrainSplitScheme
-    TEST_SPLIT: TestSplitScheme
-    LOGGING: str = field(metadata={'validate': V.OneOf(['append', 'reset'])})
-    MODEL_SELECTION: ModelSelectScheme
-    DL: Optional[FrameworkScheme]
-    ML: Optional[FrameworkScheme]
-    EARLY_STOPPING: Optional[EarlyStopScheme]
-    TEST_DAYS: Optional[str] 
-    WINDOW_SIZE: Optional[int] 
-    SKIP_TRAIN: Optional[List[str]]
-    SKIP_TEST: Optional[List[str]]
-    BATCH_SIZE: Optional[int] = 64
-    SAMPLE_RATE: Optional[str] = '1d'
-    INCLUDE_DATA: List[str] = field(default_factory=lambda: ['activity'])
-    TARGET_VAR: List[str] = field(default_factory=lambda: ['Agitation'])
-    EXP_NAME: Optional[str] = 'baseline'
+    DPATH: str = field(metadata=desc('the path to load data if not from cache'))
+    RESULT: str = field(metadata=desc('the path to save cached data, result and logging files'))
+    VARIABLE: Optional[Dict] = field(metadata=desc('a YAML block for storing variables and referencing their values elsewhere'))
+    TRAIN_SPLIT: TrainSplitScheme = field(metadata=desc('the way to split training data for model selection and evaluation'))
+    TEST_SPLIT: TestSplitScheme = field(metadata=desc('the way to split whole dataset following timeseries cv fashion'))
+    RUNS: Optional[List[Dict]] = field(metadata=desc('list of running models and their hyperparameters'))
+    MODEL_SELECTION: ModelSelectScheme = field(metadata=desc('how to select best model from validation set'))
+    DL: Optional[FrameworkDLScheme] = field(metadata=desc('key parameters for training a deep learning model, model-specific config will override it'))
+    ML: Optional[FrameworkMLScheme] = field(metadata=desc('key parameters for training a machine learning model, model-specific config will override it'))
+    SKIP_TRAIN: Optional[List[str]] = field(metadata=desc('the model name (with extra name) to skip training and load model/result from cache file'))
+    SKIP_TEST: Optional[List[str]] = field(metadata=desc('the model name (with extra name) to skip evaluation and load model/result from cache file'))
+    REPORT: ReportScheme = field(metadata=desc('how to present final results'))
+    SEED: List[int] = field(default_factory=lambda: [1], metadata=desc('random generator seed to reproduce experiments'))
+    EXP_NAME: str = field(default='baseline', metadata=desc('experiment name for creating log files and final result CSV'))
+    LOGGING: LoggingScheme = field(default_factory=lambda: LoggingScheme.append, metadata=desc('the mode in which the logging file should be written, either append | reset'))
 
     
 def load_configs(path, obj=None) -> ConfigScheme:
-    Schema = class_schema(ConfigScheme)
+    schema = class_schema(ConfigScheme)()
     if obj is not None: 
         assert isinstance(obj, ConfigScheme)
-        OmegaConf.save(obj, path)
+        OmegaConf.save(schema.dump(obj), path)
     config = OmegaConf.load(path)
-    return Schema().load(config, unknown='raise')
+    return schema.load(config, unknown='raise')
