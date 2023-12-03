@@ -19,6 +19,7 @@ In this file, the two most important objects are the classes:
 
 """
 
+
 from __future__ import annotations
 import os
 import copy
@@ -37,6 +38,8 @@ import joblib
 import utils
 import torch
 from torch.utils.data import Dataset, DataLoader
+
+__all__ = ['AgitationDataset', 'SklearnDataset']
 
 pjoin = lambda *x: os.path.join(*x)
 pfold = lambda x: os.path.dirname(x)
@@ -248,7 +251,7 @@ class Instances:
         else:
             raise NotImplementedError
 
-    def get_subsample(self, test_patient: np.ndarray = None, test_start: np.datetime64 = None):
+    def get_subsample(self, test_patient: np.ndarray = None, test_start: np.datetime64 = None) -> Instances:
         train_ds, test_ds = {}, {}
         if test_start is not None:
             test_mask = self.date[:, 0] >= test_start
@@ -276,6 +279,29 @@ class Instances:
         kwargs = dict(shuffle=True, drop_last=True)
         stage != 'train' and kwargs.update(shuffle=False, drop_last=False)
         return DataLoader(AgitationDataset(self), batch_size=batch_size, collate_fn=AgitationDataset.make_batch, **kwargs)
+    
+    def to_mldataset(self):
+        return SklearnDataset(self.np_data, self.target.squeeze(), self.sample_weight)
+
+class SklearnDataset:
+
+    def __init__(self, np_data, target, sample_weight):
+        self.np_data = np_data
+        self.target= target
+        self.sample_weight = sample_weight
+
+    def keys(self): return ['np_data', 'target', 'sample_weight']
+
+    def __getitem__(self, key): return getattr(self, key)
+
+    def __len__(self): return len(self.target)
+
+    def __add__(self, other: SklearnDataset):
+        np_data = np.concatenate((self.np_data, other.np_data), axis=0)
+        target = np.concatenate((self.target, other.target), axis=0)
+        sample_weight = compute_sample_weight(class_weight='balanced', y=target)
+        return SklearnDataset(np_data, target, sample_weight)
+    
 
 class AgitationDataset(Dataset):
 

@@ -7,7 +7,7 @@ from tqdm import tqdm
 from enum import Enum
 import functools
 
-__all__ = ['LSTMModel']
+__all__ = ['LSTMModel', 'DLModel']
 
 # Must implement: 
 #   create:  return `model_args` that creates its unique ID, and model instance
@@ -15,7 +15,7 @@ __all__ = ['LSTMModel']
 #   save:    save training argument as well as training checkpoint
 #   restore: load saved model and prepare for evaluation
 #   predict: return testing result (dict) with feeded test_dl
-class BaseModel:
+class DLModel:
     framework = "DL"
 
     @classmethod
@@ -36,8 +36,8 @@ class BaseModel:
     def save(self, path, args): 
         self.trainer.save_model(path, args)
 
-    def fit(self, train_dl, val_dl): 
-        return self.trainer.train(train_dl, val_dl)
+    def fit(self, train_dl, val_dl, **fit_args): 
+        return self.trainer.train(train_dl, val_dl, **fit_args)
 
     def predict(self, test_dl): 
         return self.trainer.predict(test_dl)
@@ -62,29 +62,31 @@ class Action(Enum):
 
 class EarlyStopping:
     
-    def __init__(self, mode, patience=None, delta=0, save_path=None):
+    def __init__(self, mode, patience=None, delta=0, save_path=None, warm_up=None):
         self.mode = mode
         self.save_path = save_path
         self.delta = delta
         self.max_patience = patience or float('inf')
+        self.warm_up = warm_up
         self.reset()
     
     def reset(self, score=None):
         self.best_score = score or float('inf') if self.mode == 'min' else float('-inf')
         self.patience_cnt = 0
 
-    def should_stop(self, new_score):
+    def should_stop(self, epoch, new_score):
+        if epoch < self.warm_up: 
+            return Action.Ignore
         if self.mode == 'max' and new_score > self.best_score + self.delta:
             self.reset(new_score)
             return Action.Save
-        elif self.mode == 'min' and new_score < self.best_score - self.delta:
+        if self.mode == 'min' and new_score < self.best_score - self.delta:
             self.reset(new_score)
             return Action.Save
-        elif self.patience_cnt >= self.max_patience:
+        if self.patience_cnt >= self.max_patience:
             return Action.Stop
-        else:
-            self.patience_cnt += 1
-            return Action.Ignore
+        self.patience_cnt += 1
+        return Action.Ignore
 
 def move_to_device(dict_data, device):
     for k, v in dict_data.items():
@@ -112,7 +114,7 @@ class EpochData:
 
 class Trainer:
 
-    def __init__(self, model, lr, epoch, num_class, device, metric, mode, patience=0, threshold=0.5):
+    def __init__(self, model, lr, epoch, num_class, device, metric, mode, patience=0, threshold=0.5, warm_up=0.15):
         self.lr = lr
         self.epoch = epoch
         self.num_class = num_class
@@ -122,6 +124,7 @@ class Trainer:
         self.mode = mode
         self.patience = patience
         self.threshold = threshold
+        self.warm_up = int(epoch * warm_up)
         global LOSS_FN 
         LOSS_FN = nn.CrossEntropyLoss(reduction='none')
         
@@ -147,8 +150,8 @@ class Trainer:
         saved_d = dict(loss=loss.item(), y_true=saved_d['y_true'].tolist(), y_prob=y_prob.tolist(), y_pred=model_output.argmax(axis=1).tolist())
         return loss, saved_d
 
-    def train(self, train_dl, val_dl):
-        earlystop = EarlyStopping(self.mode, self.patience)
+    def train(self, train_dl, val_dl, warm_up=None):
+        earlystop = EarlyStopping(self.mode, self.patience, warm_up = warm_up or self.warm_up)
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
         device = torch.device('cuda:' + str(self.device) if torch.cuda.is_available() else 'cpu')
         tempsaver = utils.TempFile()
@@ -169,7 +172,7 @@ class Trainer:
             valid_results.append(self.predict(val_dl))
             train_val_res = utils.merge_dict(train_results[i].report, valid_results[i].report, 'train', 'valid')
             pbar.set_postfix(train_loss=train_val_res['train_loss'], val_loss=train_val_res['valid_loss'])
-            next_step = earlystop.should_stop(train_val_res[self.metric])
+            next_step = earlystop.should_stop(i+1, train_val_res[self.metric])
             if next_step == Action.Save:
                 self.save_model(tempsaver.path, {'epoch': i})
             elif next_step == Action.Stop:
@@ -204,9 +207,21 @@ class LSTM(nn.Module):
 
     def __init__(self, input_dim, hidden_size, out_dim=2, bidirectional=True, num_layers=1, dropout=0.):
         super().__init__()
+        self.num_hidden = 1 +bidirectional
+        self.num_layers = num_layers
+        self.hidden_size = hidden_size
         self.lstm = nn.LSTM( input_dim, hidden_size, batch_first=True, bidirectional=bidirectional, num_layers=num_layers)
-        self.last = nn.Sequential( nn.Dropout(dropout), nn.Linear(hidden_size * (1+bidirectional), out_dim) )
+        self.last = nn.Sequential( nn.Dropout(dropout), nn.Linear(hidden_size * self.num_hidden, out_dim) )
 
+    def forward(self, x):
+        batch_size = x.size(0)
+        _, (h, c) = self.lstm(x)
+        h = h.view(self.num_layers, self.num_hidden, batch_size, self.hidden_size)[-1]
+        if self.num_hidden == 1: return self.last(h.squeeze(0))
+        else: return self.last(torch.cat((h[0],h[1]), 1))
+
+class LSTM_NEXT_1( LSTM ):
+    
     def forward(self, x):
         x = x.permute(1, 0, 2)
         x, _ = self.lstm(x)
@@ -214,8 +229,13 @@ class LSTM(nn.Module):
         return self.last(x)
 
 
-class LSTMModel( BaseModel ):
+class LSTMModel( DLModel ):
     Algorithm = LSTM
+    Trainer = Trainer
+    
+
+class LSTMNextModel ( DLModel ):
+    Algorithm = LSTM_NEXT_1
     Trainer = Trainer
     
 class AutoEncode(nn.Module):
@@ -275,7 +295,7 @@ class NOTWORKING(nn.Module):
         self.representation = None
     
 
-class AEModel( BaseModel ):
+class AEModel( DLModel ):
     Algorithm = AutoEncode
     Trainer = Trainer
 
@@ -308,6 +328,6 @@ class CNN(nn.Module):
         return self.last(x)
 
 
-class CNNModel( BaseModel ):
+class CNNModel( DLModel ):
     Algorithm = CNN
     Trainer = Trainer

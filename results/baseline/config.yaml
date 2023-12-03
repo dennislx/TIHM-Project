@@ -11,6 +11,7 @@ VARIABLE:
   WINDOW_SIZE: 7
   BATCH_SIZE: 128
   WEIGHT_SAMPLE: true
+  REFIT_AFTER: true
 TRAIN_SPLIT:
   by: patient
   n_fold: null
@@ -44,17 +45,12 @@ RUNS:
   save_intermediate: true
 - name: LSTM
   hidden_size:
-  - 32
   - 64
-  - 128
   dropout:
   - 0.0
-  - 0.1
-  - 0.3
   num_layers:
   - 1
   bidirectional:
-  - true
   - false
   save_intermediate: true
 - name: GBM
@@ -63,8 +59,8 @@ RUNS:
   min_samples_leaf:
   - 1
 MODEL_SELECTION:
-  mode: max
-  metric: valid_f1score
+  mode: min
+  metric: valid_loss
 DL:
   Data:
     target_var:
@@ -74,8 +70,8 @@ DL:
     - activity
     sample_rate: 1d
   Train:
-    metric: valid_f1score
-    mode: max
+    metric: valid_loss
+    mode: min
     patience:
     - 10
     num_class: 2
@@ -87,6 +83,7 @@ DL:
     - 0.0005
     - 0.001
     device: 1
+    refit: true
 ML:
   Data:
     target_var:
@@ -97,10 +94,11 @@ ML:
     sample_rate: 1d
   Train:
     weight_sample: true
+    refit: true
 SKIP_TRAIN:
 - MLP
-- GBM
-SKIP_TEST: []
+SKIP_TEST:
+- MLP
 REPORT:
   select_query: stage != "valid"
   group_column:

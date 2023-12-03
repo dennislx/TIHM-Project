@@ -1,7 +1,7 @@
 
 ############################# General Settings ################################
 DPATH:      'data/'
-RESULT:   &result 'results/baseline'
+RESULT:   &result 'results/baseline/dec03'
 EXP_NAME: &exp 24h-skip
 
 ############################# Data Settings ###################################

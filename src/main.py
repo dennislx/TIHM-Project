@@ -54,6 +54,7 @@ def run(c: utils.Config):
         logger.info(f"Run Experiment with SEED ({seed}) @ {utils.now()}")        
         for i, alc in enumerate(c.RUNS):
             Name, Model, Recorder = all_runs[i]
+            Name = Name + alc.get('extra_name', '')
             logger.info('*'*100 + f"\nRun Model ({Name}) @ {utils.now()}")
             Framework = alc.get('framework', Model.framework)
             for j, train_ds, test_ds in DATA[Framework].evaluate_split(**c.TEST_SPLIT):
@@ -62,10 +63,12 @@ def run(c: utils.Config):
                 hist_path  = utils.pjoin(c.RESULT, Name, 'history', f'fold{j}-seed{seed}.job', create_if_not_exist=True)
                 hist_index = {'seed': seed, 'fold': j, 'model': Name}
                 if Name in c.SKIP_TRAIN:
+                    logger.info(f"\tSkip training: \n\t\tload model from {model_path}\n\t\tload result from {hist_path}")
                     fit_model = Model.restore(model_path)
                     recorder = Recorder.restore(hist_path)
                     train_result, valid_result = recorder.get_result(train=True, valid=True)
                 else:
+                    logger.info("\tStart training {}".format(', '.join(f'{k}={v}' for k,v in alc.items())))
                     save_intermediate = None
                     if alc.get('save_intermediate', False):
                         save_intermediate = utils.pjoin(c.RESULT, Name, 'history', f'fold{j}-seed{seed}.intermediate')
@@ -74,9 +77,11 @@ def run(c: utils.Config):
                 Recorder.log(valid_result, index={'stage': 'valid', **hist_index})
 
                 if Name in c.SKIP_TEST:
+                    logger.info(f"\tSkip evaluation: \n\t\tload old result from {hist_path}")
                     recorder = Recorder.restore(hist_path)
                     fit_result = list(recorder.get_result(test=True))[0]
                 else:
+                    logger.info(f"\tStart evaluating Model ({Name})")
                     fit_result = utils.evaluate(model=fit_model, data=test_ds, return_report=True, return_confidence=True, return_loss=True)
                     recorder = None
                 Recorder.log(fit_result, index={'stage': 'test', **hist_index})

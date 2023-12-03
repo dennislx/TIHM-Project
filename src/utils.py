@@ -17,6 +17,7 @@ from marshmallow import fields as ma_fields, validate as V, Schema, post_load
 from collections import Counter, defaultdict
 from enum import Enum
 from tqdm import tqdm
+from models import MLModel, DLModel
 
 now = lambda: datetime.now().strftime('%d/%m at %H:%M:%S')
 
@@ -29,7 +30,7 @@ def pjoin(*x, create_if_not_exist=False):
 
 def f(*x):
     return [tuple(y) for y in x]
-OmegaConf.register_new_resolver("list.tuple", lambda *x: list(map(tuple, x)))
+OmegaConf.register_new_resolver("list.tuple", lambda *x: list(map(tuple, x)), replace=True)
 
 def one_hot(x, range):
     return np.take(np.eye(range), x, axis=0)
@@ -55,6 +56,7 @@ def process_date(date, sample_rate):
 
 class ConfusionMatrix(cmat.ConfusionMatrix):
     METRICS = ['accuracy', 'precision', 'recall', 'f1score', 'iou', 'rocauc', 'loss']
+    roc_auc = 'nan'; loss = 'nan'
     @classmethod
     def create(cls, y_true, y_pred, y_prob=None, loss=None, labels=None, names=None ):
         confusion_matrix = cmat.create(y_true, y_pred, labels, names).cmat
@@ -132,16 +134,23 @@ def summarize(runs, logname, savepath, group_column, exclude_column, select_quer
     logger = get_logger(logname)
     logger.info("*"*80 + "\nFinal Result\n" + agg_df.to_markdown())
     
+class Stage(Enum):
+    CV = 'cross validation'
+    REFIT = 'refit model'
 
 class ModelSelect:
-    
-    def __init__(self, mode=None, metric=None, **kwargs):
+
+    def __init__(self, mode=None, metric=None, refit=None, **kwargs):
         self.mode = mode
         self.metric = metric
         self.best_score = float('inf') if mode == 'min' else float('-inf')
         self.current_score = None
+        self.refit_after_train = refit
+        self.train_data, self.valid_data = None, None
+        self.n_experiment = 0
 
     def is_better(self, result_dict, metric):
+        self.n_experiment += 1
         new_score = result_dict[metric]
         if self.mode == 'max' and new_score > self.best_score:
             self.best_score = new_score
@@ -151,7 +160,32 @@ class ModelSelect:
             return True
         self.current_score = new_score
         return False
-    
+
+    def fit_ml(self, model: MLModel, train_dl=None, val_dl=None, stage=Stage.CV, epoch_i=-1, **evaluate_args):
+        if stage == Stage.REFIT: 
+            model.fit(**self.train_data)
+            return
+        model.fit(**train_dl)
+        if epoch_i == 0 and self.refit_after_train:
+            self.train_data = train_dl + val_dl
+        train_report = evaluate(model, train_dl, **evaluate_args)
+        val_report = evaluate(model, val_dl, **evaluate_args)
+        return train_report, val_report
+
+    def fit_dl(self, model: DLModel, train_dl=None, val_dl=None, stage=Stage.CV, epoch_i=-1, **train_args):
+        from datamodule import AgitationDataset
+        from torch.utils.data import random_split, DataLoader
+        if epoch_i==0 and self.refit_after_train:
+            ds: AgitationDataset = train_dl.dataset
+            train_size = int(0.8 * len(ds)) 
+            train_ds, val_ds = random_split(ds, [train_size, len(ds)-train_size])
+            self.train_data = DataLoader(train_ds + val_dl.dataset, batch_size=train_args.get('batch_size'), shuffle=True, drop_last=True, collate_fn=AgitationDataset.make_batch)
+            self.valid_data = DataLoader(val_ds, batch_size=train_args.get('batch_size'), shuffle=False, drop_last=False, collate_fn=AgitationDataset.make_batch)
+        if stage == Stage.REFIT:
+            model.fit(self.train_data, self.valid_data, warm_up=0.3)
+            return
+        return model.fit(train_dl, val_dl)
+        
     def prepare(self, metric):
         rtn_dict = dict(return_confidence=True, return_loss=True)
         _, metric = metric.split('_')
@@ -186,11 +220,16 @@ def copy_dict(dict_a, dict_b, *keys):
         rtn_dict[key] = dict_b.get(key, dict_a[key])
     return rtn_dict
 
+def get_path(path, level=-3):
+    return os.path.normpath(path).split(os.sep)[level]
+
+
 def cross_validation(data, model_cls, model_args, model_path, config, save_intermediate=None):
-    ms = ModelSelect(**config.MODEL_SELECTION)
+    logger = get_logger(name=config.RESULT)
     train_result, val_result, all_cm_result = {}, {}, []
     model_args = {**config.get(model_cls.framework)['Train'], **model_args}
-    for train_args in tqdm(grid_search(model_args)):
+    ms = ModelSelect(refit=model_args.get('refit'), **config.MODEL_SELECTION)
+    for i, train_args in tqdm(enumerate(grid_search(model_args))):
         train_score, val_score = Averager(), Averager()
         split_args = config.TRAIN_SPLIT.to_dict(n_fold=train_args.get('n_fold'), avoid_none=True)
         select_metric = train_args.get('metric', ms.metric)
@@ -198,15 +237,15 @@ def cross_validation(data, model_cls, model_args, model_path, config, save_inter
         for j, train, val in data.train_split(**split_args):
             if model_cls.framework == 'ML':
                 model_arg, model = model_cls.create(**train, **train_args)
-                train_report = evaluate(model, train, **predict_args)
-                val_report = evaluate(model, val, **predict_args)
+                train_dl, val_dl = train.to_mldataset(), val.to_mldataset()
+                train_report, val_report = ms.fit_ml(model, train_dl, val_dl, stage=Stage.CV, epoch_i=i, **predict_args)
             elif model_cls.framework == 'DL':
                 BATCH_INFO = {'batch_size': train_args.get('batch_size'), 'weight_sample': train_args.get('weight_sample')}
                 train_dl, val_dl = train.to_dataloader(stage='train', **BATCH_INFO), val.to_dataloader(stage='valid', **BATCH_INFO)
                 _, sequence_length, input_dim = next(iter(train_dl))['x'].shape
                 train_args.update(input_dim=input_dim, sequence_length=sequence_length)
                 model_arg, model = model_cls.create(**train_args)
-                train_report, val_report = model.fit(train_dl, val_dl)
+                train_report, val_report = ms.fit_dl(model, train_dl, val_dl, epoch_i=i, **train_args)
             train_score.add(train_report.report)
             val_score.add(val_report.report)
             if save_intermediate is not None:
@@ -216,9 +255,14 @@ def cross_validation(data, model_cls, model_args, model_path, config, save_inter
         if ms.is_better(merged_score, metric=select_metric):
             model.save(path=model_path, args=train_args)
             train_result, val_result = train_score.average, val_score.average
+    logger.info(f"\tCompleted tuning Model ({get_path(model_path)}) with {ms.n_experiment} sets of hyperparameter combinations")
     if save_intermediate:
         joblib.dump(all_cm_result, save_intermediate)
     fit_model = model_cls.restore(model_path)
+    if ms.refit_after_train:
+        logger.info("\tRe-training model on the entire train-valid combined dataset before final evaluation")
+        model_cls.framework == 'ML' and ms.fit_ml(fit_model, stage=Stage.REFIT)
+        model_cls.framework == 'DL' and ms.fit_dl(fit_model, stage=Stage.REFIT)
     return fit_model, train_result, val_result
 
 def evaluate(model, data, return_report=False, **evaluate_args):
@@ -337,7 +381,7 @@ class TrainSplitScheme(BaseScheme):
     test_ratio: Optional[float] = field(metadata=desc('the proportion of data allocated for testing'))
     test_window: Optional[str] = field(metadata=desc('the time period after the "test_start" date used for allocating data to the test dataset'))
 
-metric_regex = fr'^(train|valid|test)_({"|".join(ConfusionMatrix.METRICS)})$'
+metric_regex = fr'^(train|valid)_({"|".join(ConfusionMatrix.METRICS)})$'
 @dataclass
 class ModelSelectScheme(BaseScheme):
     mode: str = field(metadata=desc('either min|max a monitored metric to select best model', validate = V.OneOf(['min', 'max'])))
@@ -367,6 +411,7 @@ class ListValidator:
 @dataclass    
 class FrameMLTrainScheme(BaseScheme):
     weight_sample: Optional[Union[bool, List[bool]]] = field(default=True, metadata=desc('should we adjust the importance of each sample in training according to its class label'))
+    refit: bool = field(default=False, metadata=desc('should we re-training a model on the entire dataset after hyperparameter tuning'))
 
 @dataclass
 class FrameDLTrainScheme(BaseScheme):
@@ -379,6 +424,7 @@ class FrameDLTrainScheme(BaseScheme):
     epoch: Union[int, List[int]] = field(default=50, metadata=desc('how many complete pass through the entire training dataset during the trianing stage', validate=V.Range(min=0)))
     lr: Union[float, List[float]] = field(default=1e-3, metadata=desc('the step size at which a neural network updates its weights during the training'))
     device: int = field(default=1, metadata=desc('which GPU to use for training a deep learning model'))
+    refit: bool = field(default=False, metadata=desc('should we re-training a model on the entire dataset after hyperparameter tuning'))
     
 
 @dataclass
@@ -427,3 +473,42 @@ def load_configs(path, obj=None) -> ConfigScheme:
         OmegaConf.save(schema.dump(obj), path)
     config = OmegaConf.load(path)
     return schema.load(config, unknown='raise')
+
+def process_hopt_tuning(intermediate_path, metric='f1score', mode='min', topk=10):
+    import re
+    assert os.path.basename(intermediate_path) == 'history'
+    def process(index: dict, cmat: pd.DataFrame, **extra):
+        metrics = ConfusionMatrix(cmat).report
+        return {**index, **metrics, **extra}
+    res_d = []
+    pattern = r'fold(\d+)-seed(\d+)\.intermediate'
+    for in_file in os.listdir(intermediate_path):
+        match = re.match(pattern, in_file)
+        if match: 
+            fold, seed = match.group(1), match.group(2)
+            for index, cmat in joblib.load(pjoin(intermediate_path, in_file)):
+                res_d.append(process(index, cmat, fold=fold, seed=seed))
+    df = pd.DataFrame(res_d)
+    df = df.loc[:, df.nunique() != 1] # remove columns with the same value
+    groupby_col = set(df.columns) - set(['fold','seed']) -set(ConfusionMatrix.METRICS)
+    stats_col = set(ConfusionMatrix.METRICS) & set(df.columns)
+    df = df.query('stage=="valid"').groupby(list(groupby_col))[list(stats_col)].mean()
+    df = df.reset_index().sort_values(by=[metric], ascending=False if mode=='max' else True)
+    report = pd.concat([df.head(topk), df.tail(topk)])
+    with open(pjoin(intermediate_path, 'tuning.txt'), 'w') as f:
+        print(report.to_markdown(index=False), file=f)
+
+    
+    
+
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser( description="TIHM Tuning" )
+    parser.add_argument( '-p', '--path', default=None, help=( "folder where .intermediate files are loaded") )
+    parser.add_argument( '-m', '--metric', default="f1score", help=( "the metric on which ranking is based" ) )
+    args, _ = parser.parse_known_args()
+    process_hopt_tuning(args.path, args.query)
+        
+

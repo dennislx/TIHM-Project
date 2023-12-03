@@ -5,25 +5,29 @@ from sklearn import svm, linear_model, ensemble, neural_network, neighbors, metr
 import joblib
 import inspect
 import models.utils as utils
-__all__ = ['XGBoostModel', 'MLPModel', 'RFModel', 'SVMModel', 'LogisticModel', 'GBMModel']
+__all__ = ['XGBoostModel', 'MLPModel', 'RFModel', 'SVMModel', 'LogisticModel', 'GBMModel', 'MLModel']
 
 
 
 
-class Model:
+class MLModel:
     framework = "ML"
 
     def __init__(self, weight_sample, **kwargs):
         self.weight_sample = weight_sample
 
     @classmethod
-    def create(cls, np_data, target, sample_weight, weight_sample, **args):
+    def create(cls, weight_sample, **args):
         model = cls(weight_sample)
         args, model.clf = model.build(**args)
-        X, y = np_data.reshape(len(np_data), -1), target.reshape(-1)
-        if not weight_sample: sample_weight = None
-        model.train(X, y, sample_weight=sample_weight)
         return args, model
+    
+    def fit(self, np_data, target, sample_weight):
+        X, y = np_data.reshape(len(np_data), -1), target.reshape(-1)
+        if self.weight_sample and ('sample_weight' in inspect.signature(self.clf.fit).parameters):
+            self.clf.fit(X, y, sample_weight=sample_weight)
+        else:
+            self.clf.fit(X, y)
 
     @classmethod
     def restore(cls, path):
@@ -47,12 +51,6 @@ class Model:
         args, _ = utils.filter_args(self.Algorithm, args)
         return args, self.Algorithm(**args)
 
-    def train(self, X, y, sample_weight):
-        if 'sample_weight' in inspect.signature(self.clf.fit).parameters:
-            self.clf.fit(X, y, sample_weight=sample_weight)
-        else:
-            self.clf.fit(X, y)
-
     def predict(self, np_data, target, sample_weight, return_confidence=False, return_loss=False, **kwargs):
         rtn_dict = {'y_pred': None, 'y_prob': None, 'loss': None}
         X, y = np_data.reshape(len(np_data), -1), target.reshape(-1)
@@ -65,11 +63,11 @@ class Model:
         return rtn_dict
 
 
-class MLPModel(Model):
+class MLPModel(MLModel):
     # Reference: https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html
     Algorithm = neural_network.MLPClassifier
 
-class XGBoostModel(Model):
+class XGBoostModel(MLModel):
     # Reference: https://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn
     Algorithm = xgboost.XGBClassifier
     LE = LabelEncoder()
@@ -82,25 +80,25 @@ class XGBoostModel(Model):
         pred, conf = super().predict(x)
         return self.LE.inverse_transform(pred), conf
 
-class GBMModel( Model ):
+class GBMModel( MLModel ):
     # Reference: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html
     Algorithm = ensemble.GradientBoostingClassifier
 
-class RFModel(Model):
+class RFModel(MLModel):
     # Reference: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
     Algorithm = ensemble.RandomForestClassifier
 
 
-class SVMModel(Model):
+class SVMModel(MLModel):
     # See https://scikit-learn.org/stable/modules/svm.html
     Algorithm = svm.SVC
 
 
-class KNNModel(Model):
+class KNNModel(MLModel):
     Algorithm = neighbors.KNeighborsClassifier
 
 
-class LogisticModel:
+class LogisticModel ( MLModel ):
     # See: logistic regression sklearn coefficients
     Algorithm = linear_model.LogisticRegression
 
