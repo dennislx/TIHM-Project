@@ -1,12 +1,12 @@
 
 ############################# General Settings ################################
 DPATH:      'data/'
-RESULT:   &result 'results/dec1stweek'
-EXP_NAME: &exp lstm-test
+RESULT:   &result 'results/dec1stweek-ts'
+EXP_NAME: &exp lstm-tune
 
 ############################# Data Settings ###################################
 VARIABLE:
-  SAMPLE_RATE: &sample_rate 1d #1h|2h|3h|1d?
+  SAMPLE_RATE: &sample_rate 12h #1h|2h|3h|1d?
   INCLUDE_DATA: &in_data [physiology, activity] #physiology, activity, sleep, demographics
   TARGET_VAR: &target [Agitation]
   TEST_DAYS: &testdays 7d   #number of days from the end to make test data
@@ -15,11 +15,11 @@ VARIABLE:
   WEIGHT_SAMPLE: &sw true   #weight each sample by its prior belief
   REFIT_AFTER: &refit true  #refit model to entire train + valid dataset
 
-############################# Experimetn Settings #############################
+############################# Experiment Settings #############################
 TRAIN_SPLIT:
   test_ratio: 0.3 
   test_window: *testdays
-  by: patient
+  by: time
   
 TEST_SPLIT:
   n_fold: 5
@@ -43,18 +43,18 @@ DL:
   Data:
     target_var: *target
     include_data: *in_data
-    sample_rate: 1d
+    sample_rate: *sample_rate
 
   Train:
     epoch: &epoch 100
     lr: &lr [1e-4,5e-4,1e-3]
     num_class: &nclass 2
-    device: &gpu 1
-    patience: [10]
+    device: &gpu 0
+    patience: [0,10,20]
     metric: *metric
     mode: *mode
-    weight_sample: *sw
-    batch_size: *bs
+    weight_sample: [true,false]
+    batch_size: [64,128,256]
     refit: *refit
 
 ML:
@@ -85,13 +85,14 @@ RUNS:
     activation: ['tanh']
     alpha: [1e-3]
     early_stopping: [true]
+    save_intermediate: true
 
   - name: LSTM
-    hidden_size: [64]
-    dropout: [0.2]
-    num_layers: [2]
-    bidirectional: [false]
-    save_intermediate: false
+    hidden_size: [32,64,128]
+    dropout: [0.0,0.2,0.4]
+    num_layers: [1,2]
+    bidirectional: [false,true]
+    save_intermediate: true
 
   - name: GBM
     n_estimators: [20]

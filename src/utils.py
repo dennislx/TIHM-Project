@@ -229,6 +229,7 @@ def cross_validation(data, model_cls, model_args, model_path, config, save_inter
     train_result, val_result, all_cm_result = {}, {}, []
     model_args = {**config.get(model_cls.framework)['Train'], **model_args}
     ms = ModelSelect(refit=model_args.get('refit'), **config.MODEL_SELECTION)
+    start_time = datetime.now()
     for i, train_args in tqdm(enumerate(grid_search(model_args))):
         train_score, val_score = Averager(), Averager()
         split_args = config.TRAIN_SPLIT.to_dict(n_fold=train_args.get('n_fold'), avoid_none=True)
@@ -255,7 +256,7 @@ def cross_validation(data, model_cls, model_args, model_path, config, save_inter
         if ms.is_better(merged_score, metric=select_metric):
             model.save(path=model_path, args=train_args)
             train_result, val_result = train_score.average, val_score.average
-    logger.info(f"\tCompleted tuning Model ({get_path(model_path)}) with {ms.n_experiment} sets of hyperparameter combinations")
+    logger.info(f"\tCompleted tuning Model ({get_path(model_path)}) with {ms.n_experiment} parameter sets, spending {(datetime.now() - start_time).seconds//60} minutes ")
     if save_intermediate:
         joblib.dump(all_cm_result, save_intermediate)
     fit_model = model_cls.restore(model_path)
@@ -476,13 +477,19 @@ def load_configs(path, obj=None) -> ConfigScheme:
 
 def process_hopt_tuning(intermediate_path, metric='f1score', mode='min', topk=10):
     import re
-    assert os.path.basename(intermediate_path) == 'history'
+    direct_child_files = [f for f in os.listdir(intermediate_path) if os.path.isfile(pjoin(intermediate_path, f)) and f.endswith('.intermediate')]
+    assert len(direct_child_files) >= 1, "check input path again !!!"
+
     def process(index: dict, cmat: pd.DataFrame, **extra):
         metrics = ConfusionMatrix(cmat).report
         return {**index, **metrics, **extra}
+    def list2tuple(series):
+        if isinstance(series, (List, ListConfig)): return tuple(series)
+        return series
+
     res_d = []
     pattern = r'fold(\d+)-seed(\d+)\.intermediate'
-    for in_file in os.listdir(intermediate_path):
+    for in_file in direct_child_files:
         match = re.match(pattern, in_file)
         if match: 
             fold, seed = match.group(1), match.group(2)
@@ -490,9 +497,10 @@ def process_hopt_tuning(intermediate_path, metric='f1score', mode='min', topk=10
                 res_d.append(process(index, cmat, fold=fold, seed=seed))
     df = pd.DataFrame(res_d)
     df = df.loc[:, df.nunique() != 1] # remove columns with the same value
-    groupby_col = set(df.columns) - set(['fold','seed']) -set(ConfusionMatrix.METRICS)
-    stats_col = set(ConfusionMatrix.METRICS) & set(df.columns)
-    df = df.query('stage=="valid"').groupby(list(groupby_col))[list(stats_col)].mean()
+    groupby_col = list(set(df.columns) - set(['fold','seed']) -set(ConfusionMatrix.METRICS))
+    stats_col = list(set(ConfusionMatrix.METRICS) & set(df.columns))
+    for col in groupby_col: df[col] = df[col].map(list2tuple)
+    df = df.query('stage=="valid"').groupby(groupby_col)[stats_col].mean()
     df = df.reset_index().sort_values(by=[metric], ascending=False if mode=='max' else True)
     report = pd.concat([df.head(topk), df.tail(topk)])
     with open(pjoin(intermediate_path, 'tuning.txt'), 'w') as f:
@@ -508,7 +516,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser( description="TIHM Tuning" )
     parser.add_argument( '-p', '--path', default=None, help=( "folder where .intermediate files are loaded") )
     parser.add_argument( '-m', '--metric', default="f1score", help=( "the metric on which ranking is based" ) )
+    parser.add_argument( '--mode', default="max", help=( "the direction to optimize metric" ) )
     args, _ = parser.parse_known_args()
-    process_hopt_tuning(args.path, args.query)
+    process_hopt_tuning(args.path, args.metric, args.mode)
         
 

@@ -226,9 +226,10 @@ class Instances:
         """ do cross validation evaluation according to TimeSeriesSplit """
         assert isinstance(self.np_data, np.ndarray), f"Please make sure {self.__class__} has prepared dataset"
         end_date = self.end
+        n_fold = n_fold or 1
         for i in range(n_fold):
             test_start = end_date - pd.to_timedelta(test_window)
-            train_subsample, test_subsample = self.get_subsample(test_start=test_start)
+            train_subsample, test_subsample = self.get_subsample(test_start=test_start, test_window=test_window)
             yield (i+1, train_subsample, test_subsample)
             end_date = test_start
     
@@ -251,11 +252,12 @@ class Instances:
         else:
             raise NotImplementedError
 
-    def get_subsample(self, test_patient: np.ndarray = None, test_start: np.datetime64 = None) -> Instances:
+    def get_subsample(self, test_patient: np.ndarray = None, test_start: np.datetime64 = None, test_window = None) -> Instances:
         train_ds, test_ds = {}, {}
         if test_start is not None:
             test_mask = self.date[:, 0] >= test_start
             train_ds = utils.DataScheme(self.data_df.query('date < @test_start'), self.target[~test_mask], self.date[~test_mask], self.np_data[~test_mask], patient_id=self.patient_id[~test_mask], sample_rate=self.sample_rate, feature_name=self.feature_name)
+            test_end = test_start + pd.to_timedelta(test_window)
             test_ds = utils.DataScheme(self.data_df.query('date <= @test_end & date >= @test_start'), self.target[test_mask], self.date[test_mask], self.np_data[test_mask], patient_id=self.patient_id[test_mask], sample_rate=self.sample_rate, feature_name=self.feature_name)
         if test_patient is not None:
             test_mask = np.isin(self.patient_id[:, 0], test_patient)

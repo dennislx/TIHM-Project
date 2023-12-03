@@ -1,0 +1,390 @@
+[INFO] 
+
+
+****************************************************************************************************
+[INFO] Run Experiment with SEED (42) @ 03/12 at 01:23:30
+[INFO] ****************************************************************************************************
+Run Model (MLP) @ 03/12 at 01:23:30
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 1: Starts @ 03/12 at 01:23:32
+[INFO] 	Loading preprocessed data from results/baseline/cached/ml-a1s0p1d0-f1-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 1: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1951, 7, 40)
+[INFO] 		class distribution: [1587  364]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (92, 7, 40)
+[INFO] 		class distribution: [74 18]
+[INFO] 	There are 51 patients in total with 44 appear in both train and test set
+[INFO] 
+Fold 1: Train up to 2019-06-22 and Test 2019-06-23 - 2019-06-30
+[INFO] 	Start training name=MLP, extra_name=, hidden_layer_sizes=[[128, 128]], max_iter=[300], activation=['tanh'], alpha=[0.001], early_stopping=[True], save_intermediate=True
+[INFO] 	Completed tuning Model (MLP) with 1 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (MLP)
+[INFO] 
+Finish Model (MLP) @ 03/12 at 01:23:33
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.899001  0.482424  0.869104   0.795989  0.747946  0.767913  0.648770
+1  valid  0.620536  1.011921  0.843750   0.435484  0.482143  0.457627  0.421875
+2   test  0.706456  1.554729  0.739130   0.610390  0.627628  0.616667  0.482143
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 2: Starts @ 03/12 at 01:23:33
+[INFO] 	Loading preprocessed data from results/baseline/cached/ml-a1s0p1d0-f2-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 2: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1730, 7, 40)
+[INFO] 		class distribution: [1383  347]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (75, 7, 40)
+[INFO] 		class distribution: [67  8]
+[INFO] 	There are 49 patients in total with 42 appear in both train and test set
+[INFO] 
+Fold 2: Train up to 2019-06-15 and Test 2019-06-16 - 2019-06-23
+[INFO] 	Start training name=MLP, extra_name=, hidden_layer_sizes=[[128, 128]], max_iter=[300], activation=['tanh'], alpha=[0.001], early_stopping=[True], save_intermediate=True
+[INFO] 	Completed tuning Model (MLP) with 1 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (MLP)
+[INFO] 
+Finish Model (MLP) @ 03/12 at 01:23:33
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.856501  0.505315  0.831012   0.738141  0.746035  0.741930  0.613168
+1  valid  0.832967  0.554544  0.848101   0.739560  0.739560  0.739560  0.615493
+2   test  0.802239  0.847877  0.906667   0.952703  0.562500  0.586288  0.515203
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 3: Starts @ 03/12 at 01:23:33
+[INFO] 	Loading preprocessed data from results/baseline/cached/ml-a1s0p1d0-f3-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 3: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1451, 7, 40)
+[INFO] 		class distribution: [1162  289]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (71, 7, 40)
+[INFO] 		class distribution: [62  9]
+[INFO] 	There are 47 patients in total with 39 appear in both train and test set
+[INFO] 
+Fold 3: Train up to 2019-06-08 and Test 2019-06-09 - 2019-06-16
+[INFO] 	Start training name=MLP, extra_name=, hidden_layer_sizes=[[128, 128]], max_iter=[300], activation=['tanh'], alpha=[0.001], early_stopping=[True], save_intermediate=True
+[INFO] 	Completed tuning Model (MLP) with 1 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (MLP)
+[INFO] 
+Finish Model (MLP) @ 03/12 at 01:23:35
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.927459  0.410880  0.897511   0.842796  0.822890  0.832253  0.726560
+1  valid  0.735931  0.708052  0.729412   0.638357  0.625180  0.630365  0.489309
+2   test  0.648746  1.202223  0.887324   0.781863  0.603047  0.635897  0.542029
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 4: Starts @ 03/12 at 01:23:35
+[INFO] 	Loading preprocessed data from results/baseline/cached/ml-a1s0p1d0-f4-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 4: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1156, 7, 40)
+[INFO] 		class distribution: [944 212]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (82, 7, 40)
+[INFO] 		class distribution: [62 20]
+[INFO] 	There are 45 patients in total with 41 appear in both train and test set
+[INFO] 
+Fold 4: Train up to 2019-06-01 and Test 2019-06-02 - 2019-06-09
+[INFO] 	Start training name=MLP, extra_name=, hidden_layer_sizes=[[128, 128]], max_iter=[300], activation=['tanh'], alpha=[0.001], early_stopping=[True], save_intermediate=True
+[INFO] 	Completed tuning Model (MLP) with 1 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (MLP)
+[INFO] 
+Finish Model (MLP) @ 03/12 at 01:23:35
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.963432  0.303837  0.930103   0.881734  0.876983  0.879332  0.793398
+1  valid  0.786140  0.798280  0.722892   0.623039  0.593517  0.600042  0.465351
+2   test  0.690323  0.913030  0.719512   0.583612  0.560484  0.563729  0.439935
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 5: Starts @ 03/12 at 01:23:35
+[INFO] 	Loading preprocessed data from results/baseline/cached/ml-a1s0p1d0-f5-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 5: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (866, 7, 40)
+[INFO] 		class distribution: [731 135]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (82, 7, 40)
+[INFO] 		class distribution: [60 22]
+[INFO] 	There are 44 patients in total with 37 appear in both train and test set
+[INFO] 
+Fold 5: Train up to 2019-05-25 and Test 2019-05-26 - 2019-06-02
+[INFO] 	Start training name=MLP, extra_name=, hidden_layer_sizes=[[128, 128]], max_iter=[300], activation=['tanh'], alpha=[0.001], early_stopping=[True], save_intermediate=True
+[INFO] 	Completed tuning Model (MLP) with 1 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (MLP)
+[INFO] 
+Finish Model (MLP) @ 03/12 at 01:23:36
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.984841  0.179652  0.968314   0.930026  0.945394  0.937501  0.885571
+1  valid  0.833333  0.859064  0.818182   0.777778  0.714912  0.735784  0.603856
+2   test  0.793182  1.196701  0.743902   0.660535  0.609091  0.618605  0.485000
+[INFO] ****************************************************************************************************
+
+
+[INFO] ****************************************************************************************************
+Run Model (LSTM) @ 03/12 at 01:23:36
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 1: Starts @ 03/12 at 01:23:37
+[INFO] 	Loading preprocessed data from results/baseline/cached/dl-a1s0p1d0-f1-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 1: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1951, 7, 40)
+[INFO] 		class distribution: [1587  364]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (92, 7, 40)
+[INFO] 		class distribution: [74 18]
+[INFO] 	There are 51 patients in total with 44 appear in both train and test set
+[INFO] 
+Fold 1: Train up to 2019-06-22 and Test 2019-06-23 - 2019-06-30
+[INFO] 	Start training name=LSTM, hidden_size=[32, 64, 128], dropout=[0.0, 0.2, 0.4], num_layers=[1, 2], bidirectional=[False, True], save_intermediate=True
+[INFO] 	Completed tuning Model (LSTM) with 1944 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (LSTM)
+[INFO] 
+Finish Model (LSTM) @ 03/12 at 03:28:24
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.992567  0.087155  0.967076   0.945398  0.946421  0.945909  0.899326
+1  valid  0.783482  0.301431  0.968750   0.982759  0.875000  0.919799  0.857759
+2   test  0.680180  2.183354  0.771739   0.650905  0.668919  0.658355  0.523494
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 2: Starts @ 03/12 at 03:28:24
+[INFO] 	Loading preprocessed data from results/baseline/cached/dl-a1s0p1d0-f2-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 2: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1730, 7, 40)
+[INFO] 		class distribution: [1383  347]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (75, 7, 40)
+[INFO] 		class distribution: [67  8]
+[INFO] 	There are 49 patients in total with 42 appear in both train and test set
+[INFO] 
+Fold 2: Train up to 2019-06-15 and Test 2019-06-16 - 2019-06-23
+[INFO] 	Start training name=LSTM, hidden_size=[32, 64, 128], dropout=[0.0, 0.2, 0.4], num_layers=[1, 2], bidirectional=[False, True], save_intermediate=True
+[INFO] 	Completed tuning Model (LSTM) with 1944 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (LSTM)
+[INFO] 
+Finish Model (LSTM) @ 03/12 at 05:39:19
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  1.000000  0.004320  0.999349   0.998377  0.999593  0.998983  0.997970
+1  valid  1.000000  0.000433  1.000000   1.000000  1.000000  1.000000  1.000000
+2   test  0.860075  0.926684  0.920000   0.783730  0.900187  0.826923  0.725113
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 3: Starts @ 03/12 at 05:39:19
+[INFO] 	Loading preprocessed data from results/baseline/cached/dl-a1s0p1d0-f3-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 3: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1451, 7, 40)
+[INFO] 		class distribution: [1162  289]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (71, 7, 40)
+[INFO] 		class distribution: [62  9]
+[INFO] 	There are 47 patients in total with 39 appear in both train and test set
+[INFO] 
+Fold 3: Train up to 2019-06-08 and Test 2019-06-09 - 2019-06-16
+[INFO] 	Start training name=LSTM, hidden_size=[32, 64, 128], dropout=[0.0, 0.2, 0.4], num_layers=[1, 2], bidirectional=[False, True], save_intermediate=True
+[INFO] 	Completed tuning Model (LSTM) with 1944 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (LSTM)
+[INFO] 
+Finish Model (LSTM) @ 03/12 at 07:27:08
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.999140  0.033839  0.988095   0.979896  0.982622  0.981252  0.963436
+1  valid  0.896104  0.335137  0.917647   0.909490  0.870491  0.887502  0.802696
+2   test  0.856631  1.595392  0.859155   0.681900  0.681900  0.681900  0.568230
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 4: Starts @ 03/12 at 07:27:08
+[INFO] 	Loading preprocessed data from results/baseline/cached/dl-a1s0p1d0-f4-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 4: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1156, 7, 40)
+[INFO] 		class distribution: [944 212]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (82, 7, 40)
+[INFO] 		class distribution: [62 20]
+[INFO] 	There are 45 patients in total with 41 appear in both train and test set
+[INFO] 
+Fold 4: Train up to 2019-06-01 and Test 2019-06-02 - 2019-06-09
+[INFO] 	Start training name=LSTM, hidden_size=[32, 64, 128], dropout=[0.0, 0.2, 0.4], num_layers=[1, 2], bidirectional=[False, True], save_intermediate=True
+[INFO] 	Completed tuning Model (LSTM) with 1944 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (LSTM)
+[INFO] 
+Finish Model (LSTM) @ 03/12 at 08:57:51
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.994675  0.068373  0.984375   0.973038  0.973038  0.973038  0.948057
+1  valid  0.926975  0.276892  0.879518   0.852381  0.830849  0.840630  0.733065
+2   test  0.620968  2.703454  0.743902   0.642986  0.627419  0.633539  0.496039
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 5: Starts @ 03/12 at 08:57:51
+[INFO] 	Loading preprocessed data from results/baseline/cached/dl-a1s0p1d0-f5-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 5: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (866, 7, 40)
+[INFO] 		class distribution: [731 135]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (82, 7, 40)
+[INFO] 		class distribution: [60 22]
+[INFO] 	There are 44 patients in total with 37 appear in both train and test set
+[INFO] 
+Fold 5: Train up to 2019-05-25 and Test 2019-05-26 - 2019-06-02
+[INFO] 	Start training name=LSTM, hidden_size=[32, 64, 128], dropout=[0.0, 0.2, 0.4], num_layers=[1, 2], bidirectional=[False, True], save_intermediate=True
+[INFO] 	Completed tuning Model (LSTM) with 1944 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (LSTM)
+[INFO] 
+Finish Model (LSTM) @ 03/12 at 10:30:18
+[INFO] 
+   stage    rocauc      loss  accuracy  precision   recall   f1score       iou
+0  train  1.000000  0.005166  1.000000   1.000000  1.00000  1.000000  1.000000
+1  valid  0.989474  0.107317  0.974026   0.983051  0.95000  0.965064  0.933051
+2   test  0.859470  3.643087  0.731707   0.631944  0.57197  0.572917  0.449735
+[INFO] ****************************************************************************************************
+
+
+[INFO] ****************************************************************************************************
+Run Model (GBM) @ 03/12 at 10:30:18
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 1: Starts @ 03/12 at 10:30:18
+[INFO] 	Loading preprocessed data from results/baseline/cached/ml-a1s0p1d0-f1-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 1: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1951, 7, 40)
+[INFO] 		class distribution: [1587  364]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (92, 7, 40)
+[INFO] 		class distribution: [74 18]
+[INFO] 	There are 51 patients in total with 44 appear in both train and test set
+[INFO] 
+Fold 1: Train up to 2019-06-22 and Test 2019-06-23 - 2019-06-30
+[INFO] 	Start training name=GBM, n_estimators=[20], min_samples_leaf=[1]
+[INFO] 	Completed tuning Model (GBM) with 1 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (GBM)
+[INFO] 
+Finish Model (GBM) @ 03/12 at 10:30:20
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.937911  0.391418  0.845257   0.762243  0.858287  0.789838  0.665920
+1  valid  0.872768  0.544703  0.906250   0.785714  0.785714  0.785714  0.676425
+2   test  0.761261  0.606050  0.728261   0.634100  0.683934  0.642802  0.498457
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 2: Starts @ 03/12 at 10:30:20
+[INFO] 	Loading preprocessed data from results/baseline/cached/ml-a1s0p1d0-f2-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 2: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1730, 7, 40)
+[INFO] 		class distribution: [1383  347]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (75, 7, 40)
+[INFO] 		class distribution: [67  8]
+[INFO] 	There are 49 patients in total with 42 appear in both train and test set
+[INFO] 
+Fold 2: Train up to 2019-06-15 and Test 2019-06-16 - 2019-06-23
+[INFO] 	Start training name=GBM, n_estimators=[20], min_samples_leaf=[1]
+[INFO] 	Completed tuning Model (GBM) with 1 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (GBM)
+[INFO] 
+Finish Model (GBM) @ 03/12 at 10:30:22
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.934818  0.398456  0.846760   0.772564  0.861380  0.798497  0.675871
+1  valid  0.895604  0.485510  0.873418   0.780754  0.810989  0.794271  0.677536
+2   test  0.929104  0.458821  0.946667   0.842308  0.915112  0.873737  0.788770
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 3: Starts @ 03/12 at 10:30:22
+[INFO] 	Loading preprocessed data from results/baseline/cached/ml-a1s0p1d0-f3-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 3: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1451, 7, 40)
+[INFO] 		class distribution: [1162  289]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (71, 7, 40)
+[INFO] 		class distribution: [62  9]
+[INFO] 	There are 47 patients in total with 39 appear in both train and test set
+[INFO] 
+Fold 3: Train up to 2019-06-08 and Test 2019-06-09 - 2019-06-16
+[INFO] 	Start training name=GBM, n_estimators=[20], min_samples_leaf=[1]
+[INFO] 	Completed tuning Model (GBM) with 1 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (GBM)
+[INFO] 
+Finish Model (GBM) @ 03/12 at 10:30:23
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.953555  0.354829  0.863104   0.788919  0.892239  0.818530  0.702673
+1  valid  0.750361  0.642135  0.670588   0.599937  0.615079  0.603333  0.451836
+2   test  0.775986  0.634666  0.859155   0.693939  0.729391  0.709016  0.590909
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 4: Starts @ 03/12 at 10:30:23
+[INFO] 	Loading preprocessed data from results/baseline/cached/ml-a1s0p1d0-f4-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 4: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (1156, 7, 40)
+[INFO] 		class distribution: [944 212]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (82, 7, 40)
+[INFO] 		class distribution: [62 20]
+[INFO] 	There are 45 patients in total with 41 appear in both train and test set
+[INFO] 
+Fold 4: Train up to 2019-06-01 and Test 2019-06-02 - 2019-06-09
+[INFO] 	Start training name=GBM, n_estimators=[20], min_samples_leaf=[1]
+[INFO] 	Completed tuning Model (GBM) with 1 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (GBM)
+[INFO] 
+Finish Model (GBM) @ 03/12 at 10:30:24
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.973717  0.313616  0.889096   0.805671  0.918159  0.841498  0.736126
+1  valid  0.889717  0.463772  0.879518   0.841102  0.859911  0.849638  0.744505
+2   test  0.733871  0.661558  0.719512   0.624122  0.628226  0.626016  0.483091
+[INFO] ----------------------------------------------------------------------------------------------------
+Fold 5: Starts @ 03/12 at 10:30:24
+[INFO] 	Loading preprocessed data from results/baseline/cached/ml-a1s0p1d0-f5-l0-ng-r7-s1d-t7d.job
+[INFO] Fold 5: Data information: 
+[INFO] 	Training Sample:
+[INFO] 		sample shape: (866, 7, 40)
+[INFO] 		class distribution: [731 135]
+[INFO] 	Testing Sample:
+[INFO] 		sample shape: (82, 7, 40)
+[INFO] 		class distribution: [60 22]
+[INFO] 	There are 44 patients in total with 37 appear in both train and test set
+[INFO] 
+Fold 5: Train up to 2019-05-25 and Test 2019-05-26 - 2019-06-02
+[INFO] 	Start training name=GBM, n_estimators=[20], min_samples_leaf=[1]
+[INFO] 	Completed tuning Model (GBM) with 1 sets of hyperparameter combinations
+[INFO] 	Re-training model on the entire train-valid combined dataset before final evaluation
+[INFO] 	Start evaluating Model (GBM)
+[INFO] 
+Finish Model (GBM) @ 03/12 at 10:30:25
+[INFO] 
+   stage    rocauc      loss  accuracy  precision    recall   f1score       iou
+0  train  0.994910  0.236342  0.918885   0.821229  0.952522  0.866234  0.773751
+1  valid  0.858333  0.542852  0.844156   0.809426  0.764912  0.782486  0.657692
+2   test  0.850000  0.523753  0.865854   0.831772  0.821970  0.826638  0.712963
+[INFO] ****************************************************************************************************
+
+
+[INFO] ********************************************************************************
+Final Result
+|                   | rocauc       | loss         | accuracy     | precision    | recall       | f1score      | iou          |
+|:------------------|:-------------|:-------------|:-------------|:-------------|:-------------|:-------------|:-------------|
+| ('GBM', 'test')   | 0.810(0.079) | 0.577(0.084) | 0.824(0.098) | 0.725(0.106) | 0.756(0.114) | 0.736(0.110) | 0.615(0.134) |
+| ('GBM', 'train')  | 0.959(0.025) | 0.339(0.067) | 0.873(0.031) | 0.790(0.024) | 0.897(0.040) | 0.823(0.031) | 0.711(0.044) |
+| ('LSTM', 'test')  | 0.775(0.116) | 2.210(1.040) | 0.805(0.081) | 0.678(0.062) | 0.690(0.125) | 0.675(0.094) | 0.553(0.106) |
+| ('LSTM', 'train') | 0.997(0.003) | 0.040(0.037) | 0.988(0.013) | 0.979(0.022) | 0.980(0.022) | 0.980(0.022) | 0.962(0.041) |
+| ('MLP', 'test')   | 0.728(0.067) | 1.143(0.281) | 0.799(0.090) | 0.718(0.152) | 0.593(0.030) | 0.604(0.029) | 0.493(0.038) |
+| ('MLP', 'train')  | 0.926(0.051) | 0.376(0.135) | 0.899(0.053) | 0.838(0.074) | 0.828(0.086) | 0.832(0.080) | 0.733(0.110) |

@@ -1,0 +1,122 @@
+DPATH: data/
+RESULT: results/dec1stweek-ts
+VARIABLE:
+  SAMPLE_RATE: 12h
+  INCLUDE_DATA:
+  - physiology
+  - activity
+  TARGET_VAR:
+  - Agitation
+  TEST_DAYS: 7d
+  WINDOW_SIZE: 7
+  BATCH_SIZE: 128
+  WEIGHT_SAMPLE: true
+  REFIT_AFTER: true
+TRAIN_SPLIT:
+  by: time
+  n_fold: null
+  test_ratio: 0.3
+  test_window: 7d
+TEST_SPLIT:
+  data_cache_path: '{data_cache_dir}/cached/{prefix}-{self.result_name}-f{fold}-l{look_ahead}-n{normalize_type[0]}-r{roll_window}-s{self.sample_rate}-t{test_window}.job'
+  sample_rate: 12h
+  normalize_type: global
+  look_ahead: 0
+  roll_window: 7
+  test_window: 7d
+  n_fold: 5
+  use_cache: results/baseline
+RUNS:
+- name: MLP
+  extra_name: ''
+  hidden_layer_sizes:
+  - - 128
+    - 128
+  max_iter:
+  - 300
+  activation:
+  - tanh
+  alpha:
+  - 0.001
+  early_stopping:
+  - true
+  save_intermediate: true
+- name: LSTM
+  hidden_size:
+  - 32
+  - 64
+  - 128
+  dropout:
+  - 0.0
+  - 0.2
+  - 0.4
+  num_layers:
+  - 1
+  - 2
+  bidirectional:
+  - false
+  - true
+  save_intermediate: true
+- name: GBM
+  n_estimators:
+  - 20
+  min_samples_leaf:
+  - 1
+MODEL_SELECTION:
+  mode: min
+  metric: valid_loss
+DL:
+  Data:
+    target_var:
+    - Agitation
+    include_data:
+    - physiology
+    - activity
+    sample_rate: 1d
+  Train:
+    metric: valid_loss
+    mode: min
+    patience:
+    - 0
+    - 10
+    - 20
+    num_class: 2
+    batch_size:
+    - 64
+    - 128
+    - 256
+    weight_sample:
+    - true
+    - false
+    epoch: 100
+    lr:
+    - 0.0001
+    - 0.0005
+    - 0.001
+    device: 0
+    refit: true
+ML:
+  Data:
+    target_var:
+    - Agitation
+    include_data:
+    - physiology
+    - activity
+    sample_rate: 1d
+  Train:
+    weight_sample: true
+    refit: true
+SKIP_TRAIN: []
+SKIP_TEST: []
+REPORT:
+  select_query: stage != "valid"
+  group_column:
+  - model
+  - stage
+  exclude_column:
+  - fold
+  - seed
+SEED:
+- 42
+EXP_NAME: lstm-tune
+LOGGING: reset

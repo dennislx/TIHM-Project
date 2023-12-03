@@ -1,12 +1,12 @@
 
 ############################# General Settings ################################
 DPATH:      'data/'
-RESULT:   &result 'results/baseline'
-EXP_NAME: &exp 24h-skip
+RESULT:   &result 'results/dec1stweek'
+EXP_NAME: &exp lstm-test
 
 ############################# Data Settings ###################################
 VARIABLE:
-  SAMPLE_RATE: &sample_rate 1d #1h|2h|3h|1d?
+  SAMPLE_RATE: &sample_rate 12h #1h|2h|3h|1d?
   INCLUDE_DATA: &in_data [physiology, activity] #physiology, activity, sleep, demographics
   TARGET_VAR: &target [Agitation]
   TEST_DAYS: &testdays 7d   #number of days from the end to make test data
@@ -43,18 +43,18 @@ DL:
   Data:
     target_var: *target
     include_data: *in_data
-    sample_rate: 1d
+    sample_rate: *sample_rate
 
   Train:
     epoch: &epoch 100
     lr: &lr [1e-4,5e-4,1e-3]
     num_class: &nclass 2
     device: &gpu 1
-    patience: [10]
+    patience: [0,10,20]
     metric: *metric
     mode: *mode
-    weight_sample: *sw
-    batch_size: *bs
+    weight_sample: [true,false]
+    batch_size: [64,128,256]
     refit: *refit
 
 ML:
@@ -67,20 +67,20 @@ ML:
     refit: *refit
 
 # skip training and testing (match their running name + extraname)
-SKIP_TRAIN: [MLP]
-SKIP_TEST:  [MLP]
+SKIP_TRAIN: [LSTM,GBM]
+SKIP_TEST:  [LSTM,GBM]
 
 # how to aggregate final train-val-test result and report in paper
 REPORT:
   group_column: ['model', 'stage']
   exclude_column: ['fold', 'seed']
-  select_query: 'stage != "valid"'
+  select_query: 'stage != "train"'
 
 RUNS:
 
   - name: MLP
     extra_name: ""
-    hidden_layer_sizes: [[128,128], [26,26]]
+    hidden_layer_sizes: [[128,128]]
     max_iter: [300]
     activation: ['tanh']
     alpha: [1e-3]
@@ -88,10 +88,10 @@ RUNS:
     save_intermediate: true
 
   - name: LSTM
-    hidden_size: [64]
-    dropout: [0.0]
-    num_layers: [1]
-    bidirectional: [false]
+    hidden_size: [32,64,128]
+    dropout: [0.0,0.2,0.4]
+    num_layers: [1,2]
+    bidirectional: [false,true]
     save_intermediate: true
 
   - name: GBM
