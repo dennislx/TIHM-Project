@@ -12,7 +12,7 @@ VARIABLE:
   TEST_DAYS: &testdays 7d   #number of days from the end to make test data
   WINDOW_SIZE: &window 7    #number of sampled data to make one instance
   BATCH_SIZE: &bs 64        #number of sample to make a batch
-  WEIGHT_SAMPLE: &sw true   #weight each sample by its prior belief
+  WEIGHT_SAMPLE: &sw false   #weight each sample by its prior belief
   REFIT_AFTER: &refit false  #refit model to entire train + valid dataset
 
 ############################# Experimetn Settings #############################
@@ -28,7 +28,7 @@ TEST_SPLIT:
   normalize_type: global #global or by id
   sample_rate: *sample_rate
   look_ahead: 0 #sample rate (detect vs predict?)
-  use_cache: 'results/baseline'
+  use_cache: true
   data_cache_path: '{data_cache_dir}/cached/{prefix}-{self.result_name}-f{fold}-l{look_ahead}-n{normalize_type[0]}-r{roll_window}-s{self.sample_rate}-t{test_window}.job'
 
 
@@ -67,7 +67,7 @@ ML:
     refit: *refit
 
 # skip training and testing (match their running name + extraname)
-SKIP_TRAIN: [LSTM,LSTM_refit]
+SKIP_TRAIN: []
 SKIP_TEST:  []
 
 # how to aggregate final train-val-test result and report in paper
@@ -77,6 +77,11 @@ REPORT:
   select_query: 'stage != "train"'
 
 RUNS:
+
+  - name: GBM
+    n_estimators: [20]
+    min_samples_leaf: [1]
+    refit: true
 
   - name: LSTM
     hidden_size: [64]
@@ -94,7 +99,11 @@ RUNS:
     save_intermediate: false
     refit: true
 
-  - name: GBM
-    n_estimators: [20]
-    min_samples_leaf: [1]
+  - name: LSTM
+    extra_name: _sw
+    hidden_size: [64]
+    dropout: [0.2]
+    num_layers: [2]
+    bidirectional: [false]
+    save_intermediate: false
     refit: true

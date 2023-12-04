@@ -169,7 +169,9 @@ def do_rolling(window_length, look_ahead, processed_data):
             data_r, patient_r, date_r, target_r = map( lambda _: rolling_window(_, window_length), (data_s, patient_s, date_s, target_s))
             # ----------------------------
             # step 3: append to the output
-            target_r = np.any(~np.isnan(target_r), axis=1).astype(int)
+            # target: any agitation happend in the current window (7 day e.g.,)
+            # target_r = np.any(~np.isnan(target_r), axis=1).astype(int)
+            target_r = (~np.isnan(target_r[:,-1])).astype(int)
             date_out.append(date_r)
             patient_out.append(patient_r)
             target_out.append(target_r)

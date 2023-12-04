@@ -3,6 +3,7 @@ import os
 import cmat
 import joblib
 import logging
+import functools
 import copy
 import numpy as np
 import pandas as pd
@@ -61,11 +62,14 @@ class ConfusionMatrix(cmat.ConfusionMatrix):
     def create(cls, y_true, y_pred, y_prob=None, loss=None, labels=None, names=None ):
         confusion_matrix = cmat.create(y_true, y_pred, labels, names).cmat
         cmatrix = cls(confusion_matrix)
-        cmatrix.roc_auc = roc_auc_score(y_true, y_prob) if y_prob is not None else 'nan'
+        cmatrix.roc_auc = 'nan'
+        if len(set(y_true)) == 2 and y_prob is not None:
+            cmatrix.roc_auc = roc_auc_score(y_true, y_prob)
         cmatrix.loss = loss if loss is not None else 'nan'
         return cmatrix
     @property
-    def report(self): return {'rocauc': self.roc_auc, 'loss': self.loss, **super().report}
+    def report(self): 
+        return {'rocauc': self.roc_auc, 'loss': self.loss, 'cmat': self.cmat.values.tolist(), **super().report}
     
 class Recorder:
 
@@ -204,15 +208,26 @@ def merge_dict(dict_a, dict_b, prefix_a='a', prefix_b='b'):
 class Averager:
     def __init__(self):
         self.cumsum, self.count = defaultdict(float), defaultdict(int)
+        self.cmatlst = []
+
+    @staticmethod
+    def add_list(A, B):
+        return [[A[i][j] + B[i][j] for j in range(len(A[i]))] for i in range(len(A))]
+    
+    def avg_list(self, lst):
+        return [[x // self.count['cmat'] for x in row] for row in lst]
 
     def add(self, dict_values):
         for key, value in dict_values.items():
             if value == 'nan': continue
-            self.cumsum[key] += value
+            if key == 'cmat': self.cmatlst.append(value)
+            else: self.cumsum[key] += value
             self.count[key] += 1
     @property
     def average(self): 
-        return {k: v/self.count[k] if v != 'nan' else v for k,v in self.cumsum.items()}
+        rtn_dict = {k: v/self.count[k] if v != 'nan' else v for k,v in self.cumsum.items()}
+        rtn_dict['cmat'] = self.avg_list(functools.reduce(self.add_list, self.cmatlst))
+        return rtn_dict
     
 def copy_dict(dict_a, dict_b, *keys):
     rtn_dict = copy.deepcopy(dict_a)
@@ -259,7 +274,8 @@ def cross_validation(data, model_cls, model_args, model_path, config, save_inter
     logger.info(f"\tCompleted tuning Model ({get_path(model_path)}) with {ms.n_experiment} parameter sets, spending {(datetime.now() - start_time).seconds//60} minutes ")
     if save_intermediate:
         joblib.dump(all_cm_result, save_intermediate)
-    fit_model = model_cls.restore(model_path)
+    fit_args, fit_model = model_cls.restore(model_path)
+    logger.info("\tLoad best {}".format(', '.join(f'{k}={v}' for k,v in fit_args.items())))
     if ms.refit_after_train:
         logger.info("\tRe-training model on the entire train-valid combined dataset before final evaluation")
         model_cls.framework == 'ML' and ms.fit_ml(fit_model, stage=Stage.REFIT)

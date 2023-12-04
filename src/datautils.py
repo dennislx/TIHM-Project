@@ -706,6 +706,7 @@ class TIHMDataset(torch.utils.data.Dataset):
         imputer=impute.SimpleImputer(),
         n_days: int = 1,
         normalise: typing.Union[str, None] = "global",
+        test_start: str = TEST_START
     ):
         """
         A pytorch dataset which wraps the TIHM data. If 
@@ -774,7 +775,7 @@ class TIHMDataset(torch.utils.data.Dataset):
 
         # splitting the data by date to get train-test split
         train_data, test_data, train_target, test_target = self._train_test_split(
-            data=self._dataset.data, target=self._dataset.target, test_start=TEST_START
+            data=self._dataset.data, target=self._dataset.target, test_start=test_start
         )
 
         ## getting arrays from data frames

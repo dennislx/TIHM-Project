@@ -87,7 +87,8 @@ class ConfusionMatrix(cmat.ConfusionMatrix):
         cmatrix.loss = loss if loss is not None else 'nan'
         return cmatrix
     @property
-    def report(self): return {'rocauc': self.roc_auc, 'loss': self.loss, **super().report}
+    def report(self):
+        return {'rocauc': self.roc_auc, 'loss': self.loss, 'cmat': self.cmat.values.tolist(), **super().report}
 
 from sklearn.utils._param_validation import InvalidParameterError
 

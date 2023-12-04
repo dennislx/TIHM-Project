@@ -10,7 +10,7 @@ VARIABLE:
   TEST_DAYS: 7d
   WINDOW_SIZE: 7
   BATCH_SIZE: 64
-  WEIGHT_SAMPLE: true
+  WEIGHT_SAMPLE: false
   REFIT_AFTER: false
 TRAIN_SPLIT:
   by: patient
@@ -25,8 +25,14 @@ TEST_SPLIT:
   roll_window: 7
   test_window: 7d
   n_fold: 5
-  use_cache: results/baseline
+  use_cache: true
 RUNS:
+- name: GBM
+  n_estimators:
+  - 20
+  min_samples_leaf:
+  - 1
+  refit: true
 - name: LSTM
   hidden_size:
   - 64
@@ -49,11 +55,17 @@ RUNS:
   - false
   save_intermediate: false
   refit: true
-- name: GBM
-  n_estimators:
-  - 20
-  min_samples_leaf:
-  - 1
+- name: LSTM
+  extra_name: _sw
+  hidden_size:
+  - 64
+  dropout:
+  - 0.2
+  num_layers:
+  - 2
+  bidirectional:
+  - false
+  save_intermediate: false
   refit: true
 MODEL_SELECTION:
   mode: min
@@ -76,7 +88,7 @@ DL:
     - 32
     - 64
     - 128
-    weight_sample: true
+    weight_sample: false
     epoch: 100
     lr:
     - 0.001
@@ -91,11 +103,9 @@ ML:
     - activity
     sample_rate: 1d
   Train:
-    weight_sample: true
+    weight_sample: false
     refit: false
-SKIP_TRAIN:
-- LSTM
-- LSTM_refit
+SKIP_TRAIN: []
 SKIP_TEST: []
 REPORT:
   select_query: stage != "train"

@@ -59,7 +59,7 @@ class AgitationDataset(torchdata.Dataset):
     def __len__(self):
         return len(self.data)
 
-def load_data(is_train=True, normalise='global', n_days=7, bs = 100, test_start=None):
+def load_data(is_train=True, normalise='global', n_days=7, bs = 100, test_start="2019-06-23"):
     """
     @param normalise:   global | id,      standardize data globally or group by patient id
     @n_days:    create a rolling window of original sequence
@@ -123,7 +123,7 @@ def predict(model, test_loader):
     return torch.cat(ypred).numpy(), torch.cat(ytrue).numpy()
 
 
-train_dl, test_dl = load_data(), load_data(False)
+train_dl, test_dl = load_data(test_start="2019-06-23"), load_data(is_train=False, test_start="2019-06-23")
 _, L, E = next(iter(train_dl))[0].shape
 lstm = LSTMModel(input_dim=E, sequence_length=L, hidden_size=64)
 loss = train(
@@ -137,3 +137,5 @@ pred, target = predict(lstm, test_dl)
 from sklearn.metrics import classification_report, confusion_matrix
 print(confusion_matrix(target, pred.argmax(axis=1)))
 print(classification_report(target, pred.argmax(axis=1)))
+import cmat
+print(cmat.create(target, pred.argmax(axis=1)).report)

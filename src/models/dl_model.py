@@ -29,9 +29,9 @@ class DLModel:
     def restore(cls, path):
         model = cls()
         train_args, model_params = operator.itemgetter('train_args', 'state_dict')(torch.load(path))
-        _, model.trainer = model.build(**train_args)
+        model_args, model.trainer = model.build(**train_args)
         model.trainer.load_model(model_param=model_params)
-        return model
+        return model_args, model
 
     def save(self, path, args): 
         self.trainer.save_model(path, args)

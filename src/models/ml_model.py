@@ -31,10 +31,10 @@ class MLModel:
 
     @classmethod
     def restore(cls, path):
-        args, clf = joblib.load(path)
-        model = cls(**args)
+        model_args, clf = joblib.load(path)
+        model = cls(**model_args)
         model.clf = clf
-        return model
+        return model_args, model
 
     def save(self, path, args): 
         args.update(weight_sample=self.weight_sample)
@@ -45,7 +45,7 @@ class MLModel:
 
     def calculate_loss(self, y_true, y_pred, sample_weight):
         if not self.weight_sample: sample_weight = None
-        return metrics.log_loss(y_true, y_pred, sample_weight=sample_weight)
+        return metrics.log_loss(y_true, y_pred, sample_weight=sample_weight, labels=[0, 1])
 
     def build(self, **args):
         args, _ = utils.filter_args(self.Algorithm, args)
