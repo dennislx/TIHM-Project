@@ -114,7 +114,7 @@ class EpochData:
 
 class Trainer:
 
-    def __init__(self, model, lr, epoch, num_class, device, metric, mode, patience=0, threshold=0.5, warm_up=0.15):
+    def __init__(self, model, lr, epoch, num_class, device, metric, mode, patience=0, threshold=0.5, warm_up=0.15, batch_size=0):
         self.lr = lr
         self.epoch = epoch
         self.num_class = num_class
@@ -125,6 +125,7 @@ class Trainer:
         self.patience = patience
         self.threshold = threshold
         self.warm_up = int(epoch * warm_up)
+        self.batch_size = batch_size
         global LOSS_FN 
         LOSS_FN = nn.CrossEntropyLoss(reduction='none')
         

@@ -9,9 +9,9 @@ VARIABLE:
   - Agitation
   TEST_DAYS: 7d
   WINDOW_SIZE: 7
-  BATCH_SIZE: 128
+  BATCH_SIZE: 64
   WEIGHT_SAMPLE: true
-  REFIT_AFTER: true
+  REFIT_AFTER: false
 TRAIN_SPLIT:
   by: patient
   n_fold: null
@@ -27,19 +27,6 @@ TEST_SPLIT:
   n_fold: 5
   use_cache: results/baseline
 RUNS:
-- name: MLP
-  extra_name: ''
-  hidden_layer_sizes:
-  - - 128
-    - 128
-  max_iter:
-  - 300
-  activation:
-  - tanh
-  alpha:
-  - 0.001
-  early_stopping:
-  - true
 - name: LSTM
   hidden_size:
   - 64
@@ -50,11 +37,24 @@ RUNS:
   bidirectional:
   - false
   save_intermediate: false
+- name: LSTM
+  extra_name: _refit
+  hidden_size:
+  - 64
+  dropout:
+  - 0.2
+  num_layers:
+  - 2
+  bidirectional:
+  - false
+  save_intermediate: false
+  refit: true
 - name: GBM
   n_estimators:
   - 20
   min_samples_leaf:
   - 1
+  refit: true
 MODEL_SELECTION:
   mode: min
   metric: valid_loss
@@ -72,15 +72,16 @@ DL:
     patience:
     - 10
     num_class: 2
-    batch_size: 128
+    batch_size:
+    - 32
+    - 64
+    - 128
     weight_sample: true
     epoch: 100
     lr:
-    - 0.0001
-    - 0.0005
     - 0.001
     device: 1
-    refit: true
+    refit: false
 ML:
   Data:
     target_var:
@@ -91,11 +92,13 @@ ML:
     sample_rate: 1d
   Train:
     weight_sample: true
-    refit: true
-SKIP_TRAIN: []
+    refit: false
+SKIP_TRAIN:
+- LSTM
+- LSTM_refit
 SKIP_TEST: []
 REPORT:
-  select_query: stage != "valid"
+  select_query: stage != "train"
   group_column:
   - model
   - stage

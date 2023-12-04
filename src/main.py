@@ -54,7 +54,6 @@ def run(c: utils.Config):
         logger.info(f"Run Experiment with SEED ({seed}) @ {utils.now()}")        
         for i, alc in enumerate(c.RUNS):
             Name, Model, Recorder = all_runs[i]
-            Name = Name + alc.get('extra_name', '')
             logger.info('*'*100 + f"\nRun Model ({Name}) @ {utils.now()}")
             Framework = alc.get('framework', Model.framework)
             for j, train_ds, test_ds in DATA[Framework].evaluate_split(**c.TEST_SPLIT):

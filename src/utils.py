@@ -412,7 +412,7 @@ class ListValidator:
 @dataclass    
 class FrameMLTrainScheme(BaseScheme):
     weight_sample: Optional[Union[bool, List[bool]]] = field(default=True, metadata=desc('should we adjust the importance of each sample in training according to its class label'))
-    refit: bool = field(default=False, metadata=desc('should we re-training a model on the entire dataset after hyperparameter tuning'))
+    refit: Union[bool, List[bool]] = field(default=False, metadata=desc('should we re-training a model on the entire dataset after hyperparameter tuning'))
 
 @dataclass
 class FrameDLTrainScheme(BaseScheme):
@@ -425,7 +425,7 @@ class FrameDLTrainScheme(BaseScheme):
     epoch: Union[int, List[int]] = field(default=50, metadata=desc('how many complete pass through the entire training dataset during the trianing stage', validate=V.Range(min=0)))
     lr: Union[float, List[float]] = field(default=1e-3, metadata=desc('the step size at which a neural network updates its weights during the training'))
     device: int = field(default=1, metadata=desc('which GPU to use for training a deep learning model'))
-    refit: bool = field(default=False, metadata=desc('should we re-training a model on the entire dataset after hyperparameter tuning'))
+    refit: Union[bool, List[bool]] = field(default=False, metadata=desc('should we re-training a model on the entire dataset after hyperparameter tuning'))
     
 
 @dataclass

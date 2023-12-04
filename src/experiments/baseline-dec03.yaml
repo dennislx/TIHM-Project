@@ -11,9 +11,9 @@ VARIABLE:
   TARGET_VAR: &target [Agitation]
   TEST_DAYS: &testdays 7d   #number of days from the end to make test data
   WINDOW_SIZE: &window 7    #number of sampled data to make one instance
-  BATCH_SIZE: &bs 128       #number of sample to make a batch
+  BATCH_SIZE: &bs 64        #number of sample to make a batch
   WEIGHT_SAMPLE: &sw true   #weight each sample by its prior belief
-  REFIT_AFTER: &refit true  #refit model to entire train + valid dataset
+  REFIT_AFTER: &refit false  #refit model to entire train + valid dataset
 
 ############################# Experimetn Settings #############################
 TRAIN_SPLIT:
@@ -47,14 +47,14 @@ DL:
 
   Train:
     epoch: &epoch 100
-    lr: &lr [1e-4,5e-4,1e-3]
+    lr: &lr [1e-3]
     num_class: &nclass 2
     device: &gpu 1
     patience: [10]
     metric: *metric
     mode: *mode
     weight_sample: *sw
-    batch_size: *bs
+    batch_size: [32,64,128]
     refit: *refit
 
 ML:
@@ -67,24 +67,16 @@ ML:
     refit: *refit
 
 # skip training and testing (match their running name + extraname)
-SKIP_TRAIN: []
+SKIP_TRAIN: [LSTM,LSTM_refit]
 SKIP_TEST:  []
 
 # how to aggregate final train-val-test result and report in paper
 REPORT:
   group_column: ['model', 'stage']
   exclude_column: ['fold', 'seed']
-  select_query: 'stage != "valid"'
+  select_query: 'stage != "train"'
 
 RUNS:
-
-  - name: MLP
-    extra_name: ""
-    hidden_layer_sizes: [[128,128]]
-    max_iter: [300]
-    activation: ['tanh']
-    alpha: [1e-3]
-    early_stopping: [true]
 
   - name: LSTM
     hidden_size: [64]
@@ -93,6 +85,16 @@ RUNS:
     bidirectional: [false]
     save_intermediate: false
 
+  - name: LSTM
+    extra_name: _refit
+    hidden_size: [64]
+    dropout: [0.2]
+    num_layers: [2]
+    bidirectional: [false]
+    save_intermediate: false
+    refit: true
+
   - name: GBM
     n_estimators: [20]
     min_samples_leaf: [1]
+    refit: true
